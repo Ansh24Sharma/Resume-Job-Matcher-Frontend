@@ -1,0 +1,269 @@
+.authContainer {
+  min-height: 100vh;
+  display: flex;
+  align-items: stretch;
+  background: #ffffff;
+}
+
+.authWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+}
+
+.authCard::before {
+  content: none;
+}
+
+/* Hide the old Decorative SVG image */
+.authCard::after {
+  content: none;
+}
+
+.authCard {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  overflow: hidden;
+}
+
+/* New wrapper for DarkVeil on left */
+.darkVeilWrapper {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%; 
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.darkVeilWrapper > * {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+}
+
+/* Form container for right side */
+.authFormContainer {
+  width: 100%;
+  max-width: 420px; 
+  padding: 32px;
+  z-index: 1;
+}
+
+.authHeader {
+  text-align: left;
+  margin-bottom: 32px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 6px;
+  letter-spacing: -0.4px;
+}
+
+.subtitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 10px;
+  background: #5d55f8;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.description {
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.authForm {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-weight: 600;
+  color: #334155;
+  font-size: 12px;
+  letter-spacing: 0.25px;
+}
+
+.input {
+  padding: 7px 14px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 13px;
+  transition: all 0.3s ease;
+  background: #f8fafc;
+  color: #1e293b;
+  height: 36px;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #5d55f8;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  transform: translateY(-1px);
+}
+
+.input::placeholder {
+  color: #94a3b8;
+}
+
+.errorMessage {
+  background: #fef2f2;
+  color: #dc2626;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  border-left: 4px solid #dc2626;
+  font-weight: 500;
+}
+
+.submitButton {
+  background: linear-gradient(135deg, #1a1a4c, #635cf6);
+  color: white;
+  border: none;
+  padding: 14px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 6px;
+  box-shadow: 0 3px 10px rgba(99, 102, 241, 0.25);
+}
+
+.submitButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 16px rgba(99, 102, 241, 0.35);
+}
+
+.submitButton:active {
+  transform: translateY(0);
+}
+
+.submitButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 3px 10px rgba(99, 102, 241, 0.15);
+}
+
+.authFooter {
+  margin-top: 24px;
+  text-align: center;
+  padding-top: 18px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.switchText {
+  color: #64748b;
+  font-size: 13px;
+  display: inline;
+}
+
+.switchButton {
+  background: none;
+  border: none;
+  color: #5d55f8;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 6px;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  display: inline;
+}
+
+.switchButton:hover {
+  color: #8b5cf6;
+  text-decoration: underline;
+}
+
+/* Responsive styles are unchanged */
+
+@media (max-width: 1024px) {
+
+  .darkVeilWrapper {
+    width: 50%;
+  }
+
+  .authFormContainer {
+    max-width: 380px;
+  }
+}
+
+@media (max-width: 768px) {
+   .darkVeilWrapper {
+    width: 100%;
+    height: 30%;
+    top: 0;
+    left: 0;
+  }
+
+  .authCard {
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 0;
+    padding-top: 25%;
+  }
+
+  .authFormContainer {
+    max-width: 100%;
+    padding: 32px 20px;
+    width: 100%;
+  }
+
+  .title {
+    font-size: 22px;
+  }
+
+  .subtitle {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .darkVeilWrapper {
+    height: 25%;
+  }
+
+  .authCard {
+    padding-top: 20%;
+  }
+
+  .authFormContainer {
+    padding: 28px 16px;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .subtitle {
+    font-size: 18px;
+  }
+
+  .description {
+    font-size: 12px;
+  }
+}

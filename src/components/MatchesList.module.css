@@ -1,0 +1,528 @@
+.container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  font-size: 28px;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 8px
+}
+
+.refreshButton {
+  background-color: #7d8082;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.refreshButton:hover {
+  background-color: #a3a5a7;
+}
+
+.loadingState,
+.errorState,
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e2e8f0;
+  border-top-color: #4299e1;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.errorMessage {
+  color: #e53e3e;
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+
+.retryButton {
+  background-color: #e53e3e;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.retryButton:hover {
+  background-color: #c53030;
+}
+
+.matchesList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.matchCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.matchCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.matchInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.matchTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0 0 8px 0;
+}
+
+.candidateName {
+  font-size: 14px;
+  color: #4a5568;
+  margin: 4px 0;
+}
+
+.matchDate {
+  font-size: 13px;
+  color: #718096;
+  margin: 4px 0;
+}
+
+.matchScore {
+  margin: 0 24px;
+}
+
+.scoreCircle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.scoreCircleLarge {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  margin: 0 auto;
+}
+
+.excellent {
+  background: #c6f6d5;
+  color: #22543d;
+}
+
+.verygood {
+  background: #bee3f8;
+  color: #2c5282;
+}
+
+.good {
+  background: #faf089;
+  color: #744210;
+}
+
+.fair {
+  background: #fed7a1;
+  color: #c05621;
+}
+
+.poor {
+  background: #fed7d7;
+  color: #c53030;
+}
+
+.matchActions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.reviewButton {
+  background: linear-gradient(135deg, #1a1a4c, #635cf6);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+}
+
+.reviewButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.modal {
+  background-color: white;
+  border-radius: 16px;
+  max-width: 900px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 10;
+}
+
+.modalHeader h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a202c;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 32px;
+  color: #718096;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.closeButton:hover {
+  background-color: #edf2f7;
+}
+
+.modalContent {
+  padding: 24px;
+}
+
+.modalLoading,
+.modalError {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+}
+
+.explanationContent {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.overviewSection {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  background-color: #f7fafc;
+  border-radius: 12px;
+}
+
+.explanationSection {
+  margin-bottom: 8px;
+}
+
+.explanationSection h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2d3748;
+  margin: 0 0 12px 0;
+}
+
+.explanationSection p {
+  color: #4a5568;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.scoresBreakdown {
+  padding: 20px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.scoresBreakdown h4 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2d3748;
+  margin: 0 0 16px 0;
+}
+
+.scoresList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.scoreItem {
+  display: grid;
+  grid-template-columns: 140px 1fr 60px;
+  align-items: center;
+  gap: 12px;
+}
+
+.scoreLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: #4a5568;
+}
+
+.scoreBar {
+  height: 24px;
+  background-color: #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.scoreBarFill {
+  height: 100%;
+  background: linear-gradient(90deg, #4299e1, #3182ce);
+  border-radius: 12px;
+  transition: width 0.3s ease;
+}
+
+.scoreValue {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2d3748;
+  text-align: right;
+}
+
+.skillsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.skillsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skillBadge {
+  padding: 8px 12px;
+  background-color: #edf2f7;
+  color: #2d3748;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.skillBadgeMatched {
+  padding: 8px 12px;
+  background-color: #c6f6d5;
+  color: #22543d;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid #9ae6b4;
+}
+
+.skillBadgeMissing {
+  padding: 8px 12px;
+  background-color: #feebc8;
+  color: #7c2d12;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid #fbd38d;
+}
+
+.educationList,
+.experienceList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.educationList li,
+.experienceList li {
+  padding: 12px;
+  background-color: #f7fafc;
+  border-radius: 8px;
+  color: #2d3748;
+  border-left: 3px solid #4299e1;
+}
+
+.statusSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background-color: #f7fafc;
+  border-radius: 8px;
+}
+
+.statusLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.statusBadgeLarge {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.statusBadgeLarge.under_review {
+  background-color: #bee3f8;
+  color: #2c5282;
+}
+
+.statusBadgeLarge.reviewed, .statusBadgeLarge.available, .statusBadgeLarge.hired {
+  background-color: #c6f6d5;
+  color: #22543d;
+}
+
+.statusBadgeLarge.interview_scheduled {
+  background-color: #feebc8;
+  color: #7c2d12;
+}
+
+.statusBadgeLarge.rejected {
+  background-color: #fec8c8;
+  color: #7d290d
+}
+
+.noData {
+  color: #718096;
+  font-style: italic;
+  margin: 8px 0;
+}
+
+@media (max-width: 768px) {
+  .matchCard {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .matchScore {
+    margin: 0;
+    align-self: center;
+  }
+
+  .matchActions {
+    align-items: stretch;
+  }
+
+  .reviewButton {
+    width: 100%;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .refreshButton {
+    width: 100%;
+  }
+
+  .overviewSection {
+    grid-template-columns: 1fr;
+  }
+
+  .scoreItem {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .scoreLabel {
+    margin-bottom: 4px;
+  }
+
+  .scoreValue {
+    text-align: left;
+    margin-top: 4px;
+  }
+}

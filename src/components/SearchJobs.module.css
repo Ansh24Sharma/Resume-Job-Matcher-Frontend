@@ -1,0 +1,369 @@
+.container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Loading State */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #666;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #4A90E2;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Error State */
+.error {
+  text-align: center;
+  padding: 40px 20px;
+  color: #e74c3c;
+}
+
+.retryButton {
+  margin-top: 15px;
+  padding: 10px 24px;
+  background-color: #4A90E2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.retryButton:hover {
+  background-color: #357ABD;
+}
+
+/* Search Section */
+.searchSection {
+  margin-bottom: 30px;
+}
+
+.searchBar {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border: 2px solid #e1e8ed;
+  border-radius: 12px;
+  padding: 12px 20px;
+  margin-bottom: 15px;
+  transition: border-color 0.3s;
+}
+
+.searchBar:focus-within {
+  border-color: #4A90E2;
+}
+
+.searchIcon {
+  font-size: 20px;
+  margin-right: 12px;
+}
+
+.searchInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: #333;
+}
+
+.searchInput::placeholder {
+  color: #999;
+}
+
+/* Filters */
+.filters {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filterSelect {
+  padding: 10px 16px;
+  border: 2px solid #e1e8ed;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: white;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.filterSelect:hover {
+  border-color: #4A90E2;
+}
+
+.filterSelect:focus {
+  border-color: #4A90E2;
+}
+
+.clearButton {
+  padding: 10px 20px;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.clearButton:hover {
+  background-color: #c0392b;
+}
+
+/* Results Info */
+.resultsInfo {
+  margin-bottom: 20px;
+}
+
+.resultsText {
+  color: #666;
+  font-size: 14px;
+  margin: 0;
+}
+
+.resultsText strong {
+  color: #333;
+  font-weight: 600;
+}
+
+/* Jobs List */
+.jobsList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* No Results */
+.noResults {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+}
+
+.noResultsIcon {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 15px;
+}
+
+/* Job Card */
+.jobCard {
+  background-color: white;
+  border: 1px solid #e1e8ed;
+  border-radius: 12px;
+  padding: 24px;
+  transition: box-shadow 0.3s, transform 0.2s;
+  cursor: pointer;
+}
+
+.jobCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.jobHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.jobTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+  flex: 1;
+}
+
+.saveButton {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: transform 0.2s;
+}
+
+.saveButton:hover {
+  transform: scale(1.1);
+}
+
+.jobCompany {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 16px;
+}
+
+.companyIcon {
+  font-size: 18px;
+}
+
+.jobDetails {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.jobDetail {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #666;
+  background-color: #f8f9fa;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+.jobDetail span {
+  font-size: 14px;
+}
+
+.jobDescription {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.6;
+  margin: 0 0 16px 0;
+}
+
+.skillsContainer {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.skillTag {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.moreSkills {
+  color: #666;
+  font-size: 13px;
+  padding: 6px 12px;
+}
+
+.jobFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid #e1e8ed;
+}
+
+.postedDate {
+  font-size: 13px;
+  color: #999;
+}
+
+.applyButton {
+  padding: 10px 24px;
+  background-color: #4A90E2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.applyButton:hover {
+  background-color: #357ABD;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+
+  .filters {
+    flex-direction: column;
+  }
+
+  .filterSelect {
+    width: 100%;
+  }
+
+  .jobCard {
+    padding: 16px;
+  }
+
+  .jobTitle {
+    font-size: 18px;
+  }
+
+  .jobDetails {
+    gap: 10px;
+  }
+
+  .jobFooter {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .applyButton {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .searchBar {
+    padding: 10px 15px;
+  }
+
+  .searchInput {
+    font-size: 14px;
+  }
+
+  .jobCard {
+    padding: 12px;
+  }
+
+  .jobTitle {
+    font-size: 16px;
+  }
+
+  .skillsContainer {
+    gap: 6px;
+  }
+
+  .skillTag {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+}
