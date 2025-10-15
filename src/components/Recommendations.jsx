@@ -163,7 +163,6 @@ const Recommendations = () => {
           type={notification.type}
           message={notification.message}
           onClose={() => setNotification(null)}
-          duration={3000}
         />
       )}
 

@@ -150,7 +150,6 @@ const UserProfile = () => {
             type={notification.type}
             message={notification.message}
             onClose={() => setNotification(null)}
-            duration={3000}
           />
         )}
         <div className={styles.error}>No profile data available.</div>
@@ -168,7 +167,6 @@ const UserProfile = () => {
           type={notification.type}
           message={notification.message}
           onClose={() => setNotification(null)}
-          duration={3000}
         />
       )}
 
