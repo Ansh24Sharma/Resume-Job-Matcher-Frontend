@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getJobsByCreator, updateJob } from '../api/jobs';
+import { Notification } from '../assets/Notification';
 import styles from './DisplayAllJobs.module.css';
 
 const DisplayAllJobs = () => {
@@ -10,11 +11,13 @@ const DisplayAllJobs = () => {
   const [editingJob, setEditingJob] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [updateLoading, setUpdateLoading] = useState(false);
+  const [notification, setNotification] = useState(null);
+
   const [filterCriteria, setFilterCriteria] = useState({
     jobSource: 'all',
     location: '',
     department: '',
-    status: 'all'
+    status: 'all',
   });
 
   useEffect(() => {
@@ -31,8 +34,12 @@ const DisplayAllJobs = () => {
       const combinedJobs = [...regularJobs, ...postedJobs];
       setJobs(combinedJobs);
     } catch (err) {
-      setError(err.message);
       console.error('Error fetching jobs:', err);
+      setError(err.message);
+      setNotification({
+        type: 'error',
+        message: 'Failed to load jobs. Please try again.',
+      });
     } finally {
       setLoading(false);
     }
@@ -44,7 +51,6 @@ const DisplayAllJobs = () => {
       job_source: job.job_source || 'jobs',
       title: job.title || '',
       description: job.description || '',
-      // Store as strings for editing
       skillsStr: Array.isArray(job.skills) ? job.skills.join(', ') : '',
       educationStr: Array.isArray(job.education) ? job.education.join(', ') : '',
       experienceStr: Array.isArray(job.experience) ? job.experience.join(', ') : '',
@@ -52,15 +58,15 @@ const DisplayAllJobs = () => {
       location: job.location || '',
       job_type: job.job_type || 'full-time',
       salary: job.salary || job.salary_range || '',
-      status: job.status || 'active'
+      status: job.status || 'active',
     });
     setIsEditModalOpen(true);
   };
 
   const handleEditChange = (field, value) => {
-    setEditingJob(prev => ({
+    setEditingJob((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -71,28 +77,27 @@ const DisplayAllJobs = () => {
     try {
       const updateData = {
         job_id: editingJob.job_id,
-        job_source: editingJob.job_source
+        job_source: editingJob.job_source,
       };
-      
+
       if (editingJob.title) updateData.title = editingJob.title;
       if (editingJob.description) updateData.description = editingJob.description;
-      
-      // Convert string inputs to arrays
+
       if (editingJob.skillsStr) {
-        const skillsArray = editingJob.skillsStr.split(',').map(skill => skill.trim()).filter(skill => skill);
+        const skillsArray = editingJob.skillsStr.split(',').map((skill) => skill.trim()).filter((skill) => skill);
         if (skillsArray.length > 0) updateData.skills = skillsArray;
       }
-      
+
       if (editingJob.educationStr) {
-        const educationArray = editingJob.educationStr.split(',').map(edu => edu.trim()).filter(edu => edu);
+        const educationArray = editingJob.educationStr.split(',').map((edu) => edu.trim()).filter((edu) => edu);
         if (educationArray.length > 0) updateData.education = educationArray;
       }
-      
+
       if (editingJob.experienceStr) {
-        const experienceArray = editingJob.experienceStr.split(',').map(exp => exp.trim()).filter(exp => exp);
+        const experienceArray = editingJob.experienceStr.split(',').map((exp) => exp.trim()).filter((exp) => exp);
         if (experienceArray.length > 0) updateData.experience = experienceArray;
       }
-      
+
       if (editingJob.company) updateData.company = editingJob.company;
       if (editingJob.location) updateData.location = editingJob.location;
       if (editingJob.job_type) updateData.job_type = editingJob.job_type;
@@ -105,10 +110,16 @@ const DisplayAllJobs = () => {
       setIsEditModalOpen(false);
       setEditingJob(null);
 
-      alert('Job updated successfully!');
+      setNotification({
+        type: 'success',
+        message: 'Job updated successfully!',
+      });
     } catch (err) {
       console.error('Error updating job:', err);
-      alert(err || 'Failed to update job');
+      setNotification({
+        type: 'error',
+        message: err.message || 'Failed to update job. Please try again.',
+      });
     } finally {
       setUpdateLoading(false);
     }
@@ -119,27 +130,16 @@ const DisplayAllJobs = () => {
     setEditingJob(null);
   };
 
-  const filteredJobs = jobs.filter(job => {
+  const filteredJobs = jobs.filter((job) => {
     const matchesSearch =
       job.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       job.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      job.skills?.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()));
+      job.skills?.some((skill) => skill.toLowerCase().includes(searchTerm.toLowerCase()));
 
-    const matchesSource =
-      filterCriteria.jobSource === 'all' ||
-      job.job_source === filterCriteria.jobSource;
-
-    const matchesLocation =
-      !filterCriteria.location ||
-      job.location?.toLowerCase().includes(filterCriteria.location.toLowerCase());
-
-    const matchesDepartment =
-      !filterCriteria.department ||
-      job.department?.toLowerCase().includes(filterCriteria.department.toLowerCase());
-
-    const matchesStatus =
-      filterCriteria.status === 'all' ||
-      job.status?.toLowerCase() === filterCriteria.status.toLowerCase();
+    const matchesSource = filterCriteria.jobSource === 'all' || job.job_source === filterCriteria.jobSource;
+    const matchesLocation = !filterCriteria.location || job.location?.toLowerCase().includes(filterCriteria.location.toLowerCase());
+    const matchesDepartment = !filterCriteria.department || job.department?.toLowerCase().includes(filterCriteria.department.toLowerCase());
+    const matchesStatus = filterCriteria.status === 'all' || job.status?.toLowerCase() === filterCriteria.status.toLowerCase();
 
     return matchesSearch && matchesSource && matchesLocation && matchesDepartment && matchesStatus;
   });
@@ -148,9 +148,12 @@ const DisplayAllJobs = () => {
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
-      case 'active': return styles.active;
-      case 'closed': return styles.closed;
-      default: return styles.default;
+      case 'active':
+        return styles.active;
+      case 'closed':
+        return styles.closed;
+      default:
+        return styles.default;
     }
   };
 
@@ -165,20 +168,17 @@ const DisplayAllJobs = () => {
     );
   }
 
-  if (error) {
-    return (
-      <div className={styles.errorContainer}>
-        <div className={styles.errorMessage}>
-          <h3>Error Loading Jobs</h3>
-          <p>{error}</p>
-          <button onClick={fetchAllJobs} className={styles.retryButton}>Retry</button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className={styles.displayAllJobsContainer}>
+      {notification && (
+        <Notification
+          type={notification.type}
+          message={notification.message}
+          onClose={() => setNotification(null)}
+          duration={3000}
+        />
+      )}
+
       {/* Header */}
       <div className={styles.header}>
         <div className={styles.headerContent}>
@@ -187,7 +187,9 @@ const DisplayAllJobs = () => {
             Showing {filteredJobs.length} of {jobs.length} jobs
           </p>
         </div>
-        <button onClick={fetchAllJobs} className={styles.refreshButton}>🔄 Refresh</button>
+        <button onClick={fetchAllJobs} className={styles.refreshButton}>
+          🔄 Refresh
+        </button>
       </div>
 
       {/* Search and Filters */}
@@ -196,7 +198,7 @@ const DisplayAllJobs = () => {
           <input
             type="text"
             value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
+            onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search jobs by title, description, or skills..."
             className={styles.searchField}
           />
@@ -204,36 +206,40 @@ const DisplayAllJobs = () => {
         <div className={styles.filtersRow}>
           <select
             value={filterCriteria.jobSource}
-            onChange={e => setFilterCriteria(prev => ({ ...prev, jobSource: e.target.value }))}
+            onChange={(e) => setFilterCriteria((prev) => ({ ...prev, jobSource: e.target.value }))}
             className={styles.filterSelect}
           >
             <option value="all">All Sources</option>
             <option value="jobs">Regular Jobs</option>
             <option value="posted_jobs">Posted Jobs</option>
           </select>
+
           <input
             type="text"
             value={filterCriteria.location}
-            onChange={e => setFilterCriteria(prev => ({ ...prev, location: e.target.value }))}
+            onChange={(e) => setFilterCriteria((prev) => ({ ...prev, location: e.target.value }))}
             placeholder="Filter by location"
             className={styles.filterInput}
           />
+
           <input
             type="text"
             value={filterCriteria.department}
-            onChange={e => setFilterCriteria(prev => ({ ...prev, department: e.target.value }))}
+            onChange={(e) => setFilterCriteria((prev) => ({ ...prev, department: e.target.value }))}
             placeholder="Filter by department"
             className={styles.filterInput}
           />
+
           <select
             value={filterCriteria.status}
-            onChange={e => setFilterCriteria(prev => ({ ...prev, status: e.target.value }))}
+            onChange={(e) => setFilterCriteria((prev) => ({ ...prev, status: e.target.value }))}
             className={styles.filterSelect}
           >
             <option value="all">All Status</option>
             <option value="active">Active</option>
             <option value="closed">Closed</option>
           </select>
+
           <button
             onClick={() => {
               setSearchTerm('');
@@ -241,7 +247,7 @@ const DisplayAllJobs = () => {
                 jobSource: 'all',
                 location: '',
                 department: '',
-                status: 'all'
+                status: 'all',
               });
             }}
             className={styles.clearFiltersButton}
@@ -261,7 +267,7 @@ const DisplayAllJobs = () => {
             </div>
           </div>
         ) : (
-          filteredJobs.map(job => (
+          filteredJobs.map((job) => (
             <div key={job.id} className={styles.jobCard}>
               <div className={styles.jobHeader}>
                 <div className={styles.jobTitleSection}>
@@ -270,9 +276,7 @@ const DisplayAllJobs = () => {
                     <span className={`${styles.sourceBadge} ${getJobSourceColor(job.job_source)}`}>
                       {getJobSourceBadge(job.job_source)}
                     </span>
-                    <span className={`${styles.statusBadge} ${getStatusColor(job.status)}`}>
-                      {job.status}
-                    </span>
+                    <span className={`${styles.statusBadge} ${getStatusColor(job.status)}`}>{job.status}</span>
                   </div>
                 </div>
               </div>
@@ -293,18 +297,22 @@ const DisplayAllJobs = () => {
                 <div className={styles.metaItem}>
                   <span className={styles.metaIcon}>💼</span>
                   <span>
-                    {(!job.experience || (Array.isArray(job.experience) && job.experience.length === 0))
-                      ? "None"
+                    {!job.experience || (Array.isArray(job.experience) && job.experience.length === 0)
+                      ? 'None'
                       : Array.isArray(job.experience)
-                        ? job.experience.join(', ')
-                        : job.experience}
+                      ? job.experience.join(', ')
+                      : job.experience}
                   </span>
                 </div>
               </div>
 
               {job.description && (
                 <div className={styles.jobDescription}>
-                  <p>{job.description.length > 150 ? `${job.description.substring(0, 150)}...` : job.description}</p>
+                  <p>
+                    {job.description.length > 150
+                      ? `${job.description.substring(0, 150)}...`
+                      : job.description}
+                  </p>
                 </div>
               )}
 
@@ -318,9 +326,7 @@ const DisplayAllJobs = () => {
                       </span>
                     ))}
                     {job.skills.length > 4 && (
-                      <span className={styles.moreSkills}>
-                        +{job.skills.length - 4} more
-                      </span>
+                      <span className={styles.moreSkills}>+{job.skills.length - 4} more</span>
                     )}
                   </div>
                 </div>
@@ -338,10 +344,7 @@ const DisplayAllJobs = () => {
 
                 <div className={styles.jobActions}>
                   <button className={styles.viewButton}>👁️ View Details</button>
-                  <button
-                    className={styles.editButton}
-                    onClick={() => handleEditClick(job)}
-                  >
+                  <button className={styles.editButton} onClick={() => handleEditClick(job)}>
                     ✏️ Edit
                   </button>
                 </div>
@@ -354,22 +357,21 @@ const DisplayAllJobs = () => {
       {/* Edit Modal */}
       {isEditModalOpen && editingJob && (
         <div className={styles.modalOverlay} onClick={handleCloseModal}>
-          <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
               <h2>Edit Job</h2>
-              <button className={styles.closeButton} onClick={handleCloseModal}>✕</button>
+              <button className={styles.closeButton} onClick={handleCloseModal}>
+                ✕
+              </button>
             </div>
 
             <div className={styles.modalBody}>
-              {/* Job Source Read-only */}
               <div className={styles.infoGroup}>
-                <div className={styles.jobSource}>
                 <label>Job Source (Read-only)</label>
                 <div className={styles.readOnlyField}>
                   <span className={`${styles.sourceBadge} ${getJobSourceColor(editingJob.job_source)}`}>
                     {getJobSourceBadge(editingJob.job_source)}
                   </span>
-                </div>
                 </div>
               </div>
 
@@ -378,7 +380,7 @@ const DisplayAllJobs = () => {
                 <input
                   type="text"
                   value={editingJob.title}
-                  onChange={e => handleEditChange('title', e.target.value)}
+                  onChange={(e) => handleEditChange('title', e.target.value)}
                   className={styles.formInput}
                 />
               </div>
@@ -387,7 +389,7 @@ const DisplayAllJobs = () => {
                 <label>Description</label>
                 <textarea
                   value={editingJob.description}
-                  onChange={e => handleEditChange('description', e.target.value)}
+                  onChange={(e) => handleEditChange('description', e.target.value)}
                   className={styles.formTextarea}
                   rows="4"
                 />
@@ -399,7 +401,7 @@ const DisplayAllJobs = () => {
                   <input
                     type="text"
                     value={editingJob.company}
-                    onChange={e => handleEditChange('company', e.target.value)}
+                    onChange={(e) => handleEditChange('company', e.target.value)}
                     className={styles.formInput}
                   />
                 </div>
@@ -409,7 +411,7 @@ const DisplayAllJobs = () => {
                   <input
                     type="text"
                     value={editingJob.location}
-                    onChange={e => handleEditChange('location', e.target.value)}
+                    onChange={(e) => handleEditChange('location', e.target.value)}
                     className={styles.formInput}
                   />
                 </div>
@@ -420,7 +422,7 @@ const DisplayAllJobs = () => {
                   <label>Job Type</label>
                   <select
                     value={editingJob.job_type}
-                    onChange={e => handleEditChange('job_type', e.target.value)}
+                    onChange={(e) => handleEditChange('job_type', e.target.value)}
                     className={styles.formSelect}
                   >
                     <option value="full-time">Full Time</option>
@@ -434,7 +436,7 @@ const DisplayAllJobs = () => {
                   <label>Status</label>
                   <select
                     value={editingJob.status}
-                    onChange={e => handleEditChange('status', e.target.value)}
+                    onChange={(e) => handleEditChange('status', e.target.value)}
                     className={styles.formSelect}
                   >
                     <option value="active">Active</option>
@@ -448,7 +450,7 @@ const DisplayAllJobs = () => {
                 <input
                   type="text"
                   value={editingJob.experienceStr}
-                  onChange={e => handleEditChange('experienceStr', e.target.value)}
+                  onChange={(e) => handleEditChange('experienceStr', e.target.value)}
                   className={styles.formInput}
                   placeholder="e.g., 2-4 years, Mid-level"
                 />
@@ -459,7 +461,7 @@ const DisplayAllJobs = () => {
                 <input
                   type="text"
                   value={editingJob.salary}
-                  onChange={e => handleEditChange('salary', e.target.value)}
+                  onChange={(e) => handleEditChange('salary', e.target.value)}
                   className={styles.formInput}
                   placeholder="e.g., $80,000 - $120,000"
                 />
@@ -470,7 +472,7 @@ const DisplayAllJobs = () => {
                 <input
                   type="text"
                   value={editingJob.skillsStr}
-                  onChange={e => handleEditChange('skillsStr', e.target.value)}
+                  onChange={(e) => handleEditChange('skillsStr', e.target.value)}
                   className={styles.formInput}
                   placeholder="e.g., Python, React, SQL"
                 />
@@ -481,7 +483,7 @@ const DisplayAllJobs = () => {
                 <input
                   type="text"
                   value={editingJob.educationStr}
-                  onChange={e => handleEditChange('educationStr', e.target.value)}
+                  onChange={(e) => handleEditChange('educationStr', e.target.value)}
                   className={styles.formInput}
                   placeholder="e.g., Bachelor's, Master's"
                 />
@@ -511,15 +513,21 @@ const DisplayAllJobs = () => {
       {/* Summary Stats */}
       <div className={styles.summaryStats}>
         <div className={styles.stat}>
-          <span className={styles.statNumber}>{jobs.filter(j => j.job_source === 'jobs').length}</span>
+          <span className={styles.statNumber}>
+            {jobs.filter((j) => j.job_source === 'jobs').length}
+          </span>
           <span className={styles.statLabel}>Regular Jobs</span>
         </div>
         <div className={styles.stat}>
-          <span className={styles.statNumber}>{jobs.filter(j => j.job_source === 'posted_jobs').length}</span>
+          <span className={styles.statNumber}>
+            {jobs.filter((j) => j.job_source === 'posted_jobs').length}
+          </span>
           <span className={styles.statLabel}>Posted Jobs</span>
         </div>
         <div className={styles.stat}>
-          <span className={styles.statNumber}>{jobs.filter(j => j.status === 'active').length}</span>
+          <span className={styles.statNumber}>
+            {jobs.filter((j) => j.status === 'active').length}
+          </span>
           <span className={styles.statLabel}>Active Jobs</span>
         </div>
       </div>

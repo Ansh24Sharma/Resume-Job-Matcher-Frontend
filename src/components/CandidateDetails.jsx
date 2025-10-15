@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styles from "./CandidateDetails.module.css";
 import { getMyCandidates, getCandidateStatistics, updateCandidateStatus, scheduleInterview } from "../api/candidates";
 import { downloadResume } from "../api/resumes";
+import { Notification } from "../assets/Notification";
 
 const CandidateDetails = () => {
   const [candidates, setCandidates] = useState([]);
@@ -25,6 +26,7 @@ const CandidateDetails = () => {
     additional_notes: ""
   });
   const [downloadingResume, setDownloadingResume] = useState(null);
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     loadCandidates();
@@ -38,6 +40,10 @@ const CandidateDetails = () => {
       setCandidates(data.candidates || []);
     } catch (error) {
       console.error("Error loading candidates:", error);
+      setNotification({
+        type: "error",
+        message: "Failed to load candidates."
+      });
     } finally {
       setLoading(false);
     }
@@ -49,27 +55,30 @@ const CandidateDetails = () => {
       setStatistics(stats);
     } catch (error) {
       console.error("Error loading statistics:", error);
+      setNotification({
+        type: "error",
+        message: "Failed to load candidate statistics."
+      });
     }
   };
 
   const filteredCandidates = candidates.filter(candidate => {
     const matchesSearch = candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         candidate.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         candidate.skills.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()));
+      candidate.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      candidate.skills.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    const matchesExperience = !filterCriteria.experience || 
-                             candidate.experience.length.toString().includes(filterCriteria.experience);
+    const matchesExperience = !filterCriteria.experience ||
+      candidate.experience.length.toString().includes(filterCriteria.experience);
     
     const matchesSkills = !filterCriteria.skills ||
-                         candidate.skills.some(skill => 
-                           skill.toLowerCase().includes(filterCriteria.skills.toLowerCase())
-                         );
+      candidate.skills.some(skill =>
+        skill.toLowerCase().includes(filterCriteria.skills.toLowerCase())
+      );
     
     const matchesLocation = !filterCriteria.location ||
-                           candidate.location?.toLowerCase().includes(filterCriteria.location.toLowerCase());
+      candidate.location?.toLowerCase().includes(filterCriteria.location.toLowerCase());
     
     const matchesScore = !filterCriteria.score || candidate.final_score >= parseInt(filterCriteria.score);
-
     const matchesStatus = !filterCriteria.status || candidate.status === filterCriteria.status;
 
     return matchesSearch && matchesExperience && matchesSkills && matchesLocation && matchesScore && matchesStatus;
@@ -77,10 +86,10 @@ const CandidateDetails = () => {
 
   const getScoreColor = (score) => {
     const formattedScore = formatScore(score);
-    if (formattedScore>= 90) return styles.excellent;
-    if (formattedScore>= 80) return styles.verygood;
-    if (formattedScore>= 70) return styles.good;
-    if (formattedScore>= 60) return styles.fair;
+    if (formattedScore >= 90) return styles.excellent;
+    if (formattedScore >= 80) return styles.verygood;
+    if (formattedScore >= 70) return styles.good;
+    if (formattedScore >= 60) return styles.fair;
     return styles.poor;
   };
 
@@ -93,8 +102,6 @@ const CandidateDetails = () => {
     setDownloadingResume(candidate.candidate_id);
     try {
       const response = await downloadResume(candidate.user_id);
-      
-      // Create a blob URL and trigger download
       const blob = new Blob([response.data], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -104,11 +111,16 @@ const CandidateDetails = () => {
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-      
+      setNotification({
+        type: "success",
+        message: "Resume downloaded successfully!"
+      });
     } catch (error) {
       console.error("Error downloading resume:", error);
-      const errorMessage = error.response?.data?.detail || "Failed to download resume";
-      alert(errorMessage);
+      setNotification({
+        type: "error",
+        message: error.response?.data?.detail || "Failed to download resume."
+      });
     } finally {
       setDownloadingResume(null);
     }
@@ -117,13 +129,22 @@ const CandidateDetails = () => {
   const handleStatusChange = async (candidateId, newStatus) => {
     try {
       await updateCandidateStatus(candidateId, newStatus);
-      setCandidates(prev => prev.map(candidate => 
-        candidate.candidate_id === candidateId ? { ...candidate, status: newStatus } : candidate
-      ));
+      setCandidates(prev =>
+        prev.map(candidate =>
+          candidate.candidate_id === candidateId ? { ...candidate, status: newStatus } : candidate
+        )
+      );
       loadStatistics();
+      setNotification({
+        type: "success",
+        message: `Candidate status updated to "${newStatus}".`
+      });
     } catch (error) {
       console.error("Error updating status:", error);
-      alert("Failed to update candidate status");
+      setNotification({
+        type: "error",
+        message: "Failed to update candidate status."
+      });
     }
   };
 
@@ -136,7 +157,10 @@ const CandidateDetails = () => {
     e.preventDefault();
     try {
       await scheduleInterview(selectedCandidate.candidate_id, interviewData);
-      alert("Interview scheduled successfully! Email sent to candidate.");
+      setNotification({
+        type: "success",
+        message: "Interview scheduled successfully! Email sent to candidate."
+      });
       setShowScheduleModal(false);
       setInterviewData({
         interview_date: "",
@@ -149,7 +173,10 @@ const CandidateDetails = () => {
       loadStatistics();
     } catch (error) {
       console.error("Error scheduling interview:", error);
-      alert("Failed to schedule interview");
+      setNotification({
+        type: "error",
+        message: "Failed to schedule interview."
+      });
     }
   };
 
@@ -160,11 +187,18 @@ const CandidateDetails = () => {
 
   return (
     <div className={styles.container}>
+      {notification && (
+        <Notification
+          type={notification.type}
+          message={notification.message}
+          onClose={() => setNotification(null)}
+          duration={3000}
+        />
+      )}
+
       <div className={styles.header}>
         <h2 className={styles.title}>Candidate Management</h2>
-        <p className={styles.description}>
-          Manage and track your candidate pipeline
-        </p>
+        <p className={styles.description}>Manage and track your candidate pipeline</p>
       </div>
 
       {statistics && (

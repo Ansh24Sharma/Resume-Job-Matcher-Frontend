@@ -1,14 +1,19 @@
 import React, { useState, useRef } from "react";
 import styles from "./ResumeUpload.module.css";
 import { uploadResume } from "../api/resumes";
+import { Notification } from "../assets/Notification";
 
 const ResumeUpload = () => {
   const [file, setFile] = useState(null);
   const [uploadStatus, setUploadStatus] = useState("idle"); // idle, uploading, success, error
-  const [uploadMessage, setUploadMessage] = useState("");
+  const [notification, setNotification] = useState(null);
   const [dragActive, setDragActive] = useState(false);
   const [uploadedResumes, setUploadedResumes] = useState([]);
   const fileInputRef = useRef(null);
+
+  const showNotification = (type, message) => {
+    setNotification({ type, message });
+  };
 
   const handleFileSelect = (selectedFile) => {
     if (selectedFile) {
@@ -17,27 +22,31 @@ const ResumeUpload = () => {
       const fileExtension = selectedFile.name.toLowerCase().substring(selectedFile.name.lastIndexOf('.'));
       
       if (!allowedTypes.includes(fileExtension)) {
-        setUploadMessage("Please upload only PDF, DOC, or DOCX files");
+        showNotification("error", "Please upload only PDF, DOC, or DOCX files");
         setUploadStatus("error");
         return;
       }
 
       // Validate file size (max 5MB)
       if (selectedFile.size > 5 * 1024 * 1024) {
-        setUploadMessage("File size must be less than 5MB");
+        showNotification("error", "File size must be less than 5MB");
         setUploadStatus("error");
         return;
       }
 
       setFile(selectedFile);
       setUploadStatus("idle");
-      setUploadMessage("");
+      showNotification("success", `File "${selectedFile.name}" selected successfully`);
     }
   };
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-    handleFileSelect(selectedFile);
+    if (selectedFile) {
+      handleFileSelect(selectedFile);
+    }
+    // Reset the input value to allow selecting the same file again if needed
+    e.target.value = '';
   };
 
   const handleDrag = (e) => {
@@ -62,20 +71,19 @@ const ResumeUpload = () => {
 
   const handleUpload = async () => {
     if (!file) {
-      setUploadMessage("Please select a file first");
+      showNotification("error", "Please select a file first");
       setUploadStatus("error");
       return;
     }
 
     setUploadStatus("uploading");
-    setUploadMessage("Uploading your resume...");
 
     try {
       const response = await uploadResume(file);
       
       setUploadStatus("success");
-      setUploadMessage("Resume uploaded successfully! Extracted entities: " + 
-        (response.data.entities?.length || 0) + " items found");
+      const entitiesCount = response.data.entities?.length || 0;
+      showNotification("success", `Resume uploaded successfully! ${entitiesCount} entities extracted`);
       
       // Add to uploaded resumes list
       const newResume = {
@@ -89,32 +97,45 @@ const ResumeUpload = () => {
       setUploadedResumes(prev => [newResume, ...prev]);
       setFile(null);
       
-      // Reset file input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-      
     } catch (error) {
       setUploadStatus("error");
-      setUploadMessage(error.response?.data?.message || "Upload failed. Please try again.");
+      showNotification("error", error.response?.data?.message || "Upload failed. Please try again.");
     }
   };
 
   const removeFile = () => {
     setFile(null);
     setUploadStatus("idle");
-    setUploadMessage("");
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
   };
 
   const triggerFileInput = () => {
     fileInputRef.current?.click();
   };
 
+  const handleDropZoneClick = (e) => {
+    // Don't trigger file input if file already exists
+    if (file) {
+      return;
+    }
+    // Don't trigger if clicking on the browse button (it has its own handler)
+    if (e.target.closest('button')) {
+      return;
+    }
+    triggerFileInput();
+  };
+
   return (
     <div className={styles.uploadContainer}>
+      {/* Notification Component */}
+      {notification && (
+        <Notification
+          type={notification.type}
+          message={notification.message}
+          onClose={() => setNotification(null)}
+          duration={3000}
+        />
+      )}
+
       <div className={styles.uploadHeader}>
         <h2 className={styles.title}>Upload Resume</h2>
         <p className={styles.description}>
@@ -130,7 +151,8 @@ const ResumeUpload = () => {
           onDragLeave={handleDrag}
           onDragOver={handleDrag}
           onDrop={handleDrop}
-          onClick={triggerFileInput}
+          onClick={handleDropZoneClick}
+          style={{ cursor: file ? 'default' : 'pointer' }}
         >
           <input
             ref={fileInputRef}
@@ -138,6 +160,7 @@ const ResumeUpload = () => {
             onChange={handleFileChange}
             accept=".pdf,.doc,.docx"
             className={styles.fileInput}
+            style={{ display: 'none' }}
           />
           
           {!file ? (
@@ -149,7 +172,14 @@ const ResumeUpload = () => {
               <p className={styles.dropZoneSubtext}>
                 Supports PDF, DOC, and DOCX files up to 5MB
               </p>
-              <button type="button" className={styles.browseButton}>
+              <button 
+                type="button" 
+                className={styles.browseButton}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  triggerFileInput();
+                }}
+              >
                 Browse Files
               </button>
             </div>
@@ -178,14 +208,6 @@ const ResumeUpload = () => {
           )}
         </div>
 
-        {/* Upload Status */}
-        {uploadMessage && (
-          <div className={`${styles.statusMessage} ${styles[uploadStatus]}`}>
-            {uploadStatus === "uploading" && <div className={styles.spinner}></div>}
-            {uploadMessage}
-          </div>
-        )}
-
         {/* Upload Button */}
         {file && uploadStatus !== "uploading" && (
           <div className={styles.uploadActions}>
@@ -196,6 +218,14 @@ const ResumeUpload = () => {
             >
               {uploadStatus === "uploading" ? "Uploading..." : "Upload Resume"}
             </button>
+          </div>
+        )}
+
+        {/* Loading indicator during upload */}
+        {uploadStatus === "uploading" && (
+          <div className={styles.uploadingIndicator}>
+            <div className={styles.spinner}></div>
+            <span>Uploading your resume...</span>
           </div>
         )}
       </div>

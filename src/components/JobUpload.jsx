@@ -1,12 +1,13 @@
 import React, { useState, useRef } from "react";
 import styles from "./JobUpload.module.css";
 import { uploadJob, postJob } from "../api/jobs";
+import { Notification } from "../assets/Notification";
 
 const JobUpload = () => {
   const [uploadMethod, setUploadMethod] = useState("file"); // file or form
   const [file, setFile] = useState(null);
   const [uploadStatus, setUploadStatus] = useState("idle");
-  const [uploadMessage, setUploadMessage] = useState("");
+  const [notification, setNotification] = useState(null);
   const [dragActive, setDragActive] = useState(false);
   const [postedJobs, setPostedJobs] = useState([]);
   const [jobForm, setJobForm] = useState({
@@ -22,29 +23,37 @@ const JobUpload = () => {
   });
   const fileInputRef = useRef(null);
 
+  const showNotification = (type, message) => {
+    setNotification({ type, message });
+  };
+
   const handleFileSelect = (selectedFile) => {
     if (selectedFile) {
       const allowedTypes = ['.pdf', '.doc', '.docx', '.txt'];
       const ext = selectedFile.name.toLowerCase().substring(selectedFile.name.lastIndexOf('.'));
       if (!allowedTypes.includes(ext)) {
-        setUploadMessage("Please upload only PDF, DOC, DOCX, or TXT files");
+        showNotification("error", "Please upload only PDF, DOC, DOCX, or TXT files");
         setUploadStatus("error");
         return;
       }
       if (selectedFile.size > 5 * 1024 * 1024) {
-        setUploadMessage("File size must be less than 5MB");
+        showNotification("error", "File size must be less than 5MB");
         setUploadStatus("error");
         return;
       }
       setFile(selectedFile);
       setUploadStatus("idle");
-      setUploadMessage("");
+      showNotification("success", `File "${selectedFile.name}" selected successfully`);
     }
   };
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-    handleFileSelect(selectedFile);
+    if (selectedFile) {
+      handleFileSelect(selectedFile);
+    }
+    // Reset the input value to allow selecting the same file again if needed
+    e.target.value = '';
   };
 
   const handleDrag = (e) => {
@@ -70,22 +79,18 @@ const JobUpload = () => {
 
   const handleFileUpload = async () => {
     if (!file) {
-      setUploadMessage("Please select a file first");
+      showNotification("error", "Please select a file first");
       setUploadStatus("error");
       return;
     }
     setUploadStatus("uploading");
-    setUploadMessage("Uploading job description...");
 
     try {
       const response = await uploadJob(file);
 
       setUploadStatus("success");
-      setUploadMessage(
-        "Job posted successfully! Extracted entities: " +
-          (response.entities ? Object.keys(response.entities).length : 0) +
-          " categories found"
-      );
+      const entitiesCount = response.entities ? Object.keys(response.entities).length : 0;
+      showNotification("success", `Job posted successfully! ${entitiesCount} categories extracted`);
 
       const newJob = {
         id: response.id || Date.now(),
@@ -99,7 +104,6 @@ const JobUpload = () => {
 
       setPostedJobs((prev) => [newJob, ...prev]);
       setFile(null);
-      if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (error) {
       setUploadStatus("error");
       let msg = "Upload failed. Please try again.";
@@ -109,19 +113,18 @@ const JobUpload = () => {
             ? error.response.data.detail
             : JSON.stringify(error.response.data.detail);
       }
-      setUploadMessage(msg);
+      showNotification("error", msg);
     }
   };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (!jobForm.title || !jobForm.description) {
-      setUploadMessage("Job title and description are required");
+      showNotification("error", "Job title and description are required");
       setUploadStatus("error");
       return;
     }
     setUploadStatus("uploading");
-    setUploadMessage("Creating job posting...");
 
     try {
       const jobData = {
@@ -144,11 +147,10 @@ const JobUpload = () => {
             : []
       };
 
-
       const response = await postJob(jobData);
 
       setUploadStatus("success");
-      setUploadMessage("Job posted successfully!");
+      showNotification("success", "Job posted successfully!");
 
       const newJob = {
         id: response.id || Date.now(),
@@ -184,23 +186,43 @@ const JobUpload = () => {
             ? error.response.data.detail
             : JSON.stringify(error.response.data.detail);
       }
-      setUploadMessage(msg);
+      showNotification("error", msg);
     }
   };
 
   const removeFile = () => {
     setFile(null);
     setUploadStatus("idle");
-    setUploadMessage("");
-    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const triggerFileInput = () => {
     fileInputRef.current?.click();
   };
 
+  const handleDropZoneClick = (e) => {
+    // Don't trigger file input if file already exists
+    if (file) {
+      return;
+    }
+    // Don't trigger if clicking on the browse button (it has its own handler)
+    if (e.target.closest('button')) {
+      return;
+    }
+    triggerFileInput();
+  };
+
   return (
     <div className={styles.jobUploadContainer}>
+      {/* Notification Component */}
+      {notification && (
+        <Notification
+          type={notification.type}
+          message={notification.message}
+          onClose={() => setNotification(null)}
+          duration={3000}
+        />
+      )}
+
       <div className={styles.uploadHeader}>
         <h2 className={styles.title}>Post a Job</h2>
         <p className={styles.description}>
@@ -231,7 +253,8 @@ const JobUpload = () => {
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
             onDrop={handleDrop}
-            onClick={triggerFileInput}
+            onClick={handleDropZoneClick}
+            style={{ cursor: file ? 'default' : 'pointer' }}
           >
             <input
               ref={fileInputRef}
@@ -239,6 +262,7 @@ const JobUpload = () => {
               onChange={handleFileChange}
               accept=".pdf,.doc,.docx,.txt"
               className={styles.fileInput}
+              style={{ display: 'none' }}
             />
             {!file ? (
               <div className={styles.dropZoneContent}>
@@ -249,7 +273,14 @@ const JobUpload = () => {
                 <p className={styles.dropZoneSubtext}>
                   Supports PDF, DOC, DOCX, and TXT files up to 5MB
                 </p>
-                <button type="button" className={styles.browseButton}>
+                <button 
+                  type="button" 
+                  className={styles.browseButton}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    triggerFileInput();
+                  }}
+                >
                   Browse Files
                 </button>
               </div>
@@ -284,6 +315,14 @@ const JobUpload = () => {
               >
                 {uploadStatus === "uploading" ? "Uploading..." : "Post Job"}
               </button>
+            </div>
+          )}
+          
+          {/* Loading indicator during upload */}
+          {uploadStatus === "uploading" && (
+            <div className={styles.uploadingIndicator}>
+              <div className={styles.spinner}></div>
+              <span>Posting job...</span>
             </div>
           )}
         </div>
@@ -445,13 +484,6 @@ const JobUpload = () => {
               </button>
             </div>
           </form>
-        </div>
-      )}
-
-      {uploadMessage && (
-        <div className={`${styles.statusMessage} ${styles[uploadStatus]}`}>
-          {uploadStatus === "uploading" && <div className={styles.spinner}></div>}
-          {uploadMessage}
         </div>
       )}
 

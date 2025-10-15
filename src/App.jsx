@@ -245,20 +245,7 @@ const NavbarWithRouter = ({ setLoginStatus }) => {
                   </button>
                 </>
               ) : (
-                  <>
-                    <button
-                      onClick={handleLogin}
-                      className={`${styles.loginBtn} btn`}
-                    >
-                      Login
-                    </button>
-                    <button
-                      onClick={handleSignup}
-                      className={`${styles.signupBtn} btn`}
-                    >
-                      Sign Up
-                    </button>
-                  </>
+                  <></>
               )}
             </nav>
           </div>

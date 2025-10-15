@@ -1,0 +1,87 @@
+@keyframes slideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.container {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  padding: 16px 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 300px;
+  max-width: 500px;
+  z-index: 99999;
+  animation: slideIn 0.3s ease-out;
+  color: white;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.success {
+  background-color: #10b981;
+}
+
+.error {
+  background-color: #ef4444;
+}
+
+.icon {
+  font-size: 24px;
+  flex-shrink: 0;
+  font-weight: bold;
+}
+
+.content {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+  line-height: 1;
+}
+
+.closeButton:hover {
+  opacity: 1;
+}
+
+.closeButton:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+  .container {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    min-width: auto;
+    max-width: none;
+  }
+}
