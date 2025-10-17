@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styles from "./Dashboard.module.css";
 import DarkVeil from "../animated_css/Darkviel";
 import ResumeUpload from "./ResumeUpload";
 import Recommendations from "./Recommendations";
 import UserProfile from "./UserProfile";
 import SavedJobs from "./SavedJobs";
+import Chatbot from "./ChatBot";
 import { getUserData } from "../utils/storage";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("recommendations");
   const userData = getUserData();
-
 
   const tabs = [
     { id: "recommendations", label: "Job Matches", icon: "🎯" },
@@ -43,7 +43,6 @@ const Dashboard = () => {
             <div className={styles.darkVeilBgWrapper}>
               <DarkVeil />
             </div>
-            {/* Foreground Text */}
             <div className={styles.welcomeContent}>
               <h1 className={styles.welcomeTitle}>
                 Welcome back, {userData?.username || "User"}!
@@ -75,10 +74,13 @@ const Dashboard = () => {
               ))}
             </div>
           </div>
+          
           {/* Tab Content */}
           <div className={styles.tabContent}>{renderTabContent()}</div>
         </div>
       </div>
+
+      <Chatbot />
     </div>
   );
 };

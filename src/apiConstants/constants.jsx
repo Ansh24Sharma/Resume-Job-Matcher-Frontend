@@ -27,3 +27,5 @@ export const SCHEDULE_INTERVIEW_URL = `${API_BASE_URL}/candidates/schedule-inter
 
 export const GET_MATCHES_URL = `${API_BASE_URL}/matches/getMatches`;
 export const GET_EXPLATION_OF_MATCHES_URL = `${API_BASE_URL}/matches/getDetailedMatches`;
+
+export const CHATBOT_MESSAGE_URL = `${API_BASE_URL}/chat/message`;
