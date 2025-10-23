@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./Dashboard.module.css";
 import DarkVeil from "../animated_css/Darkviel";
 import ResumeUpload from "./ResumeUpload";
@@ -7,10 +7,39 @@ import UserProfile from "./UserProfile";
 import SavedJobs from "./SavedJobs";
 import Chatbot from "./ChatBot";
 import { getUserData } from "../utils/storage";
+import { getMyProfile } from "../api/user_profile";
+import { getAllJobs } from "../api/jobs";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("recommendations");
+  const [resumeData, setResumeData] = useState(null);
+  const [jobsData, setJobsData] = useState(null);
+  const [isLoadingData, setIsLoadingData] = useState(true);
   const userData = getUserData();
+
+  // Fetch user's resume and available jobs
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoadingData(true);
+      try {
+        // Fetch resume data
+        const profileResponse = await getMyProfile();
+        console.log("Profile data:", profileResponse);
+        setResumeData(profileResponse);
+
+        // Fetch jobs data
+        const jobsResponse = await getAllJobs();
+        console.log("Jobs data:", jobsResponse);
+        setJobsData(jobsResponse);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setIsLoadingData(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const tabs = [
     { id: "recommendations", label: "Job Matches", icon: "🎯" },
@@ -37,7 +66,6 @@ const Dashboard = () => {
   return (
     <div className={styles.dashboardContainer}>
       <div className="container-fluid">
-        {/* Dashboard Header */}
         <div className={`${styles.dashboardHeader} mb-4`}>
           <div className={styles.welcomeSection}>
             <div className={styles.darkVeilBgWrapper}>
@@ -54,9 +82,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Main Dashboard Content */}
         <div className={styles.dashboardContent}>
-          {/* Navigation Tabs */}
           <div className={`${styles.tabNavigation} mb-4`}>
             <div className="row g-2 w-100">
               {tabs.map((tab) => (
@@ -75,12 +101,14 @@ const Dashboard = () => {
             </div>
           </div>
           
-          {/* Tab Content */}
           <div className={styles.tabContent}>{renderTabContent()}</div>
         </div>
       </div>
 
-      <Chatbot />
+      {/* Pass resume and jobs data to chatbot */}
+      {!isLoadingData && (
+        <Chatbot resumeData={resumeData} jobsData={jobsData} />
+      )}
     </div>
   );
 };

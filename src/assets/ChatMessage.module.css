@@ -1,0 +1,82 @@
+.formattedMessage {
+  width: 100%;
+}
+
+.messageParagraph {
+  margin: 0 0 12px 0;
+  line-height: 1.6;
+  color: inherit;
+}
+
+.messageParagraph:last-child {
+  margin-bottom: 0;
+}
+
+.messageList {
+  margin: 10px 0;
+  padding-left: 20px;
+  list-style-type: none;
+}
+
+.messageList li {
+  margin: 8px 0;
+  line-height: 1.6;
+  color: inherit;
+  position: relative;
+  padding-left: 8px;
+}
+
+.messageList li::before {
+  content: "•";
+  position: absolute;
+  left: -12px;
+  color: inherit;
+  font-weight: bold;
+}
+
+.heading1,
+.heading2,
+.heading3 {
+  margin: 16px 0 10px 0;
+  font-weight: 600;
+  color: inherit;
+  line-height: 1.4;
+}
+
+.heading1 {
+  font-size: 18px;
+  border-bottom: 2px solid currentColor;
+  padding-bottom: 6px;
+  opacity: 0.9;
+}
+
+.heading2 {
+  font-size: 16px;
+  opacity: 0.95;
+}
+
+.heading3 {
+  font-size: 15px;
+  opacity: 0.95;
+}
+
+.formattedMessage strong {
+  font-weight: 600;
+  color: inherit;
+}
+
+.formattedMessage code {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+}
+
+/* Special styling for bot messages to make jobs stand out */
+.formattedMessage h4 {
+  background: rgba(0, 0, 0, 0.03);
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin: 12px 0 8px 0;
+}
