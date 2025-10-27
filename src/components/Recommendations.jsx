@@ -286,8 +286,8 @@ const Recommendations = () => {
                           <span className={styles.location}>📍 {job.location}</span>
                         )}
                         {job.job_type && <span className={styles.jobType}>{job.job_type}</span>}
-                        {job.experience_level && (
-                          <span className={styles.experience}>{job.experience_level}</span>
+                        {job.experience && (
+                          <span className={styles.experience}>📊 {JSON.parse(job.experience)}</span>
                         )}
                       </div>
                     </div>
@@ -374,13 +374,16 @@ const Recommendations = () => {
                       {job.description && (
                         <div className={styles.description}>
                           <h5>Job Description:</h5>
-                          <p>{job.description}</p>
+                          <div
+                            className={styles.formattedDescription}
+                            dangerouslySetInnerHTML={{ __html: job.description }}
+                          />
                         </div>
                       )}
-                      {job.requirements && (
+                      {job.education && (
                         <div className={styles.requirements}>
                           <h5>Requirements:</h5>
-                          <p>{job.requirements}</p>
+                          <p>{JSON.parse(job.education)}</p>
                         </div>
                       )}
                     </div>

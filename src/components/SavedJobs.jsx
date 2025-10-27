@@ -156,9 +156,9 @@ const SavedJobs = () => {
                         {job.job_type && (
                           <span className={styles.jobType}>{job.job_type}</span>
                         )}
-                        {job.experience_level && (
+                        {job.experience && (
                           <span className={styles.experience}>
-                            {job.experience_level}
+                            📊 {JSON.parse(job.experience)}
                           </span>
                         )}
                       </div>
@@ -219,16 +219,19 @@ const SavedJobs = () => {
                   {selectedJob === index && (
                     <div className={styles.expandedContent}>
                       {job.description && (
-                        <div className={styles.description}>
+                        <div className={styles.jobDescription}>
                           <h5>Job Description:</h5>
-                          <p>{job.description}</p>
+                          <div
+                            className={styles.formattedDescription}
+                            dangerouslySetInnerHTML={{ __html: job.description }}
+                          />
                         </div>
                       )}
 
-                      {job.requirements && (
+                      {job.education && (
                         <div className={styles.requirements}>
                           <h5>Requirements:</h5>
-                          <p>{job.requirements}</p>
+                          <p>{JSON.parse(job.education)}</p>
                         </div>
                       )}
 

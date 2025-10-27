@@ -240,15 +240,51 @@
 }
 
 /* Job Description */
-.jobDescription {
-  margin-bottom: 16px;
+.formattedDescription {
+  line-height: 1.6;
+  color: #4a5568;
+  overflow: hidden;
 }
 
-.jobDescription p {
-  color: #475569;
-  line-height: 1.6;
-  margin: 0;
-  font-size: 0.95rem;
+.formattedDescription p {
+  margin: 0.5em 0;
+  line-height: 1.5;
+}
+
+.formattedDescription strong {
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.formattedDescription ul,
+.formattedDescription ol {
+  margin-left: 1.5em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.formattedDescription li {
+  margin-bottom: 0.3em;
+}
+
+.formattedDescription h1,
+.formattedDescription h2,
+.formattedDescription h3 {
+  margin-top: 0.8em;
+  margin-bottom: 0.4em;
+  font-weight: 600;
+  color: #1a202c;
+}
+
+.formattedDescription a {
+  color: #3182ce;
+  text-decoration: underline;
+}
+
+.jobDescription {
+  margin: 1rem 0;
+  max-height: 150px;
+  overflow: hidden;
 }
 
 /* Skills Section */
@@ -571,6 +607,20 @@
 
 .moreActionsDropdown button.deleteButton:hover {
   background: #fef2f2;
+}
+
+.quillEditor {
+  background: white;
+  border-radius: 4px;
+}
+
+.quillEditor :global(.ql-container) {
+  min-height: 200px;
+  font-size: 14px;
+}
+
+.quillEditor :global(.ql-editor) {
+  min-height: 200px;
 }
 
 /* Responsive Design */

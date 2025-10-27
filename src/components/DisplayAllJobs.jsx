@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { getJobsByCreator, updateJob } from '../api/jobs';
 import { Notification } from '../assets/Notification';
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 import styles from './DisplayAllJobs.module.css';
 
 const DisplayAllJobs = () => {
@@ -12,6 +14,7 @@ const DisplayAllJobs = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [updateLoading, setUpdateLoading] = useState(false);
   const [notification, setNotification] = useState(null);
+  const quillRef = useRef(null);
 
   const [filterCriteria, setFilterCriteria] = useState({
     jobSource: 'all',
@@ -19,6 +22,26 @@ const DisplayAllJobs = () => {
     department: '',
     status: 'all',
   });
+
+  // Quill editor modules configuration
+  const quillModules = {
+    toolbar: [
+      [{ 'header': [1, 2, 3, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      [{ 'indent': '-1'}, { 'indent': '+1' }],
+      ['link'],
+      [{ 'align': [] }],
+      ['clean']
+    ],
+  };
+
+  const quillFormats = [
+    'header',
+    'bold', 'italic', 'underline', 'strike',
+    'list', 'bullet', 'indent',
+    'link', 'align'
+  ];
 
   useEffect(() => {
     fetchAllJobs();
@@ -67,6 +90,13 @@ const DisplayAllJobs = () => {
     setEditingJob((prev) => ({
       ...prev,
       [field]: value,
+    }));
+  };
+
+  const handleDescriptionChange = (content) => {
+    setEditingJob((prev) => ({
+      ...prev,
+      description: content,
     }));
   };
 
@@ -130,10 +160,15 @@ const DisplayAllJobs = () => {
     setEditingJob(null);
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    return new Date(dateString).toLocaleDateString();
+  };
+
   const filteredJobs = jobs.filter((job) => {
     const matchesSearch =
       job.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      job.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      stripHtmlTags(job.description || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       job.skills?.some((skill) => skill.toLowerCase().includes(searchTerm.toLowerCase()));
 
     const matchesSource = filterCriteria.jobSource === 'all' || job.job_source === filterCriteria.jobSource;
@@ -291,7 +326,7 @@ const DisplayAllJobs = () => {
                 </div>
                 <div className={styles.metaItem}>
                   <span className={styles.metaIcon}>📅</span>
-                  <span>Posted {job.created_at}</span>
+                  <span>Posted {formatDate(job.created_at)}</span>
                 </div>
                 <div className={styles.metaItem}>
                   <span className={styles.metaIcon}>💼</span>
@@ -307,11 +342,10 @@ const DisplayAllJobs = () => {
 
               {job.description && (
                 <div className={styles.jobDescription}>
-                  <p>
-                    {job.description.length > 150
-                      ? `${job.description.substring(0, 150)}...`
-                      : job.description}
-                  </p>
+                    <div
+                      className={styles.formattedDescription}
+                      dangerouslySetInnerHTML={{ __html: job.description }}
+                    />
                 </div>
               )}
 
@@ -386,11 +420,15 @@ const DisplayAllJobs = () => {
 
               <div className={styles.formGroup}>
                 <label>Description</label>
-                <textarea
+                <ReactQuill
+                  ref={quillRef}
+                  theme="snow"
                   value={editingJob.description}
-                  onChange={(e) => handleEditChange('description', e.target.value)}
-                  className={styles.formTextarea}
-                  rows="4"
+                  onChange={handleDescriptionChange}
+                  modules={quillModules}
+                  formats={quillFormats}
+                  placeholder="Enter job description..."
+                  className={styles.quillEditor}
                 />
               </div>
 

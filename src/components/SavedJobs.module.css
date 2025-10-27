@@ -123,6 +123,53 @@
   animation: spin 1s linear infinite;
 }
 
+.formattedDescription {
+  line-height: 1.6;
+  color: #4a5568;
+  overflow: hidden;
+}
+
+.formattedDescription p {
+  margin: 0.5em 0;
+  line-height: 1.5;
+}
+
+.formattedDescription strong {
+  font-weight: 500;
+  color: #2d3748;
+}
+
+.formattedDescription ul,
+.formattedDescription ol {
+  margin-left: 1.5em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.formattedDescription li {
+  margin-bottom: 0.3em;
+}
+
+.formattedDescription h1,
+.formattedDescription h2,
+.formattedDescription h3 {
+  margin-top: 0.8em;
+  margin-bottom: 0.4em;
+  font-weight: 600;
+  color: #1a202c;
+}
+
+.formattedDescription a {
+  color: #3182ce;
+  text-decoration: underline;
+}
+
+.jobDescription {
+  margin: 1rem 0;
+  max-height: 150px;
+  overflow: hidden;
+}
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
@@ -288,8 +335,6 @@
 }
 
 .description h5,
-.requirements h5,
-.skills h5,
 .matchAnalysis h5 {
   font-size: 0.95rem;
   font-weight: 600;
