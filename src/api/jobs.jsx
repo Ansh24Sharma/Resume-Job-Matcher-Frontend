@@ -1,5 +1,5 @@
 import api from "./api";
-import { UPLOAD_JOB_URL, POST_JOB_URL, GET_ALL_JOBS_URL, APPLY_FOR_JOB_URL, SAVE_JOB_URL, GET_SAVED_JOBS_URL, GET_JOBS_BY_CREATOR, UPDATE_JOBS_URL } from "../apiConstants/constants";
+import { UPLOAD_JOB_URL, POST_JOB_URL, GET_ALL_JOBS_URL, APPLY_FOR_JOB_URL, SAVE_JOB_URL, GET_SAVED_JOBS_URL, GET_JOBS_BY_CREATOR, UPDATE_JOBS_URL } from "../constants/apiConstants";
 
 export const uploadJob = async(file) => {
     const formData = new FormData();

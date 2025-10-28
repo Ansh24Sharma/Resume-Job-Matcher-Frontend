@@ -1,5 +1,5 @@
 import api from "./api";
-import { UPLOAD_RESUME_URL, DOWNLOAD_RESUME_URL } from "../apiConstants/constants";
+import { UPLOAD_RESUME_URL, DOWNLOAD_RESUME_URL } from "../constants/apiConstants";
 
 export const uploadResume = async(file) => {
     const formData = new FormData();

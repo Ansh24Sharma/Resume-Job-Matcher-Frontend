@@ -1,5 +1,5 @@
 import api from './api';
-import { LOGIN_URL, SIGNUP_URL } from '../apiConstants/constants';
+import { LOGIN_URL, SIGNUP_URL } from '../constants/apiConstants';
 import { setToken, setUserData } from '../utils/storage';
 
 export const signup = (username, email, password, role = "user") => {

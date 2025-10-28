@@ -137,7 +137,7 @@ const CandidateDetails = () => {
       loadStatistics();
       setNotification({
         type: "success",
-        message: `Candidate status updated to "${newStatus}".`
+        message: `Candidate status updated to ${newStatus.toUpperCase()}.`
       });
     } catch (error) {
       console.error("Error updating status:", error);

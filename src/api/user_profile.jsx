@@ -2,7 +2,7 @@ import api from "./api";
 import { 
     GET_MY_PROFILE_URL, 
     UPDATE_PROFILE_URL 
-} from "../apiConstants/constants";
+} from "../constants/apiConstants";
 
 export const getMyProfile = async () => {
     try {

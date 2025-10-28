@@ -1,5 +1,5 @@
 import api from './api';
-import { GET_MATCHES_URL, GET_EXPLATION_OF_MATCHES_URL } from '../apiConstants/constants';
+import { GET_MATCHES_URL, GET_EXPLATION_OF_MATCHES_URL } from '../constants/apiConstants';
 
 
 export const getMatches = async () => {

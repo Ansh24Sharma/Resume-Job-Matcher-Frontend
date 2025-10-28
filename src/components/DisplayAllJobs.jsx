@@ -11,7 +11,9 @@ const DisplayAllJobs = () => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [editingJob, setEditingJob] = useState(null);
+  const [viewingJob, setViewingJob] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [updateLoading, setUpdateLoading] = useState(false);
   const [notification, setNotification] = useState(null);
   const quillRef = useRef(null);
@@ -66,6 +68,11 @@ const DisplayAllJobs = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleViewClick = (job) => {
+    setViewingJob(job);
+    setIsViewModalOpen(true);
   };
 
   const handleEditClick = (job) => {
@@ -155,14 +162,25 @@ const DisplayAllJobs = () => {
     }
   };
 
-  const handleCloseModal = () => {
+  const handleCloseEditModal = () => {
     setIsEditModalOpen(false);
     setEditingJob(null);
   };
 
-  const formatDate = (dateString) => {
+  const handleCloseViewModal = () => {
+    setIsViewModalOpen(false);
+    setViewingJob(null);
+  };
+
+   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
     return new Date(dateString).toLocaleDateString();
+  };
+
+  const stripHtmlTags = (html) => {
+    const tmp = document.createElement('DIV');
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || '';
   };
 
   const filteredJobs = jobs.filter((job) => {
@@ -342,10 +360,14 @@ const DisplayAllJobs = () => {
 
               {job.description && (
                 <div className={styles.jobDescription}>
-                    <div
-                      className={styles.formattedDescription}
-                      dangerouslySetInnerHTML={{ __html: job.description }}
-                    />
+                  <div
+                    className={styles.formattedDescription}
+                    dangerouslySetInnerHTML={{ 
+                      __html: stripHtmlTags(job.description).length > 200
+                        ? stripHtmlTags(job.description).substring(0, 200) + '...'
+                        : job.description
+                    }}
+                  />
                 </div>
               )}
 
@@ -365,18 +387,20 @@ const DisplayAllJobs = () => {
                 </div>
               )}
 
-              <div className={styles.jobFooter}>
-                <div className={styles.jobStats}>
-                  {job.salary_range && (
+              <div className={styles.jobStats}>
+                  {(job.salary) && (
                     <div className={styles.salary}>
                       <span className={styles.salaryIcon}>💰</span>
-                      <span>{job.salary_range}</span>
+                      <span>{job.salary}</span>
                     </div>
                   )}
                 </div>
 
+              <div className={styles.jobFooter}>
                 <div className={styles.jobActions}>
-                  <button className={styles.viewButton}>👁️ View Details</button>
+                  <button className={styles.viewButton} onClick={() => handleViewClick(job)}>
+                    👁️ View Details
+                  </button>
                   <button className={styles.editButton} onClick={() => handleEditClick(job)}>
                     ✏️ Edit
                   </button>
@@ -387,13 +411,138 @@ const DisplayAllJobs = () => {
         )}
       </div>
 
+      {/* View Details Modal */}
+      {isViewModalOpen && viewingJob && (
+        <div className={styles.modalOverlay} onClick={handleCloseViewModal}>
+          <div className={styles.viewModalContent} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <div>
+                <h2>{viewingJob.title}</h2>
+                <div className={styles.viewModalBadges}>
+                  <span className={`${styles.sourceBadge} ${getJobSourceColor(viewingJob.job_source)}`}>
+                    {getJobSourceBadge(viewingJob.job_source)}
+                  </span>
+                  <span className={`${styles.statusBadge} ${getStatusColor(viewingJob.status)}`}>
+                    {viewingJob.status}
+                  </span>
+                </div>
+              </div>
+              <button className={styles.closeButton} onClick={handleCloseViewModal}>
+                ✕
+              </button>
+            </div>
+
+            <div className={styles.viewModalBody}>
+              {/* Company & Location Info */}
+              <div className={styles.viewSection}>
+                <div className={styles.viewInfoGrid}>
+                  <div className={styles.viewInfoItem}>
+                    <span className={styles.viewInfoLabel}>🏢 Company</span>
+                    <span className={styles.viewInfoValue}>{viewingJob.company}</span>
+                  </div>
+                  <div className={styles.viewInfoItem}>
+                    <span className={styles.viewInfoLabel}>📍 Location</span>
+                    <span className={styles.viewInfoValue}>{viewingJob.location}</span>
+                  </div>
+                  <div className={styles.viewInfoItem}>
+                    <span className={styles.viewInfoLabel}>💼 Job Type</span>
+                    <span className={styles.viewInfoValue}>{viewingJob.job_type}</span>
+                  </div>
+                  <div className={styles.viewInfoItem}>
+                    <span className={styles.viewInfoLabel}>💰 Salary</span>
+                    <span className={styles.viewInfoValue}>{viewingJob.salary || viewingJob.salary_range || 'Not specified'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Description */}
+              <div className={styles.viewSection}>
+                <h3 className={styles.viewSectionTitle}>Job Description</h3>
+                <div 
+                  className={styles.viewDescription}
+                  dangerouslySetInnerHTML={{ __html: viewingJob.description }}
+                />
+              </div>
+
+              {/* Skills */}
+              {viewingJob.skills && viewingJob.skills.length > 0 && (
+                <div className={styles.viewSection}>
+                  <h3 className={styles.viewSectionTitle}>Required Skills</h3>
+                  <div className={styles.viewSkillsContainer}>
+                    {viewingJob.skills.map((skill, index) => (
+                      <span key={index} className={styles.viewSkillTag}>
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Education */}
+              {viewingJob.education && viewingJob.education.length > 0 && (
+                <div className={styles.viewSection}>
+                  <h3 className={styles.viewSectionTitle}>Education Requirements</h3>
+                  <ul className={styles.viewList}>
+                    {viewingJob.education.map((edu, index) => (
+                      <li key={index}>{edu}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Experience */}
+              {viewingJob.experience && viewingJob.experience.length > 0 && (
+                <div className={styles.viewSection}>
+                  <h3 className={styles.viewSectionTitle}>Experience Required</h3>
+                  <ul className={styles.viewList}>
+                    {viewingJob.experience.map((exp, index) => (
+                      <li key={index}>{exp}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Dates */}
+              <div className={styles.viewSection}>
+                <div className={styles.viewDateInfo}>
+                  <div className={styles.viewDateItem}>
+                    <span className={styles.viewDateLabel}>Posted:</span>
+                    <span className={styles.viewDateValue}>{formatDate(viewingJob.created_at)}</span>
+                  </div>
+                  <div className={styles.viewDateItem}>
+                    <span className={styles.viewDateLabel}>Last Updated:</span>
+                    <span className={styles.viewDateValue}>{formatDate(viewingJob.updated_at)}</span>
+                  </div>
+                  <div className={styles.viewDateItem}>
+                    <span className={styles.viewDateLabel}>Posted By:</span>
+                    <span className={styles.viewDateValue}>{viewingJob.creator_email}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.viewModalFooter}>
+              <button className={styles.editButtonLarge} onClick={() => {
+                handleCloseViewModal();
+                handleEditClick(viewingJob);
+              }}>
+                ✏️ Edit Job
+              </button>
+              <button className={styles.closeButtonLarge} onClick={handleCloseViewModal}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Edit Modal */}
       {isEditModalOpen && editingJob && (
-        <div className={styles.modalOverlay} onClick={handleCloseModal}>
+        <div className={styles.modalOverlay} onClick={handleCloseEditModal}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
               <h2>Edit Job</h2>
-              <button className={styles.closeButton} onClick={handleCloseModal}>
+              <button className={styles.closeButton} onClick={handleCloseEditModal}>
                 ✕
               </button>
             </div>
@@ -530,7 +679,7 @@ const DisplayAllJobs = () => {
             <div className={styles.modalFooter}>
               <button
                 className={styles.cancelButton}
-                onClick={handleCloseModal}
+                onClick={handleCloseEditModal}
                 disabled={updateLoading}
               >
                 Cancel

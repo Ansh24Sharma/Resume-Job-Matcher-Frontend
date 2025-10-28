@@ -1,5 +1,5 @@
 import api from './api';
-import { CHATBOT_MESSAGE_URL } from '../apiConstants/constants';
+import { CHATBOT_MESSAGE_URL } from '../constants/apiConstants';
 
 export const sendMessage = async (
     message, 

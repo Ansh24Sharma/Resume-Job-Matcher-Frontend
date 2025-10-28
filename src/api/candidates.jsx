@@ -5,7 +5,7 @@ import {
     GET_CANDIDATE_DETAIL_URL,
     UPDATE_CANDIDATE_STATUS_URL,
     SCHEDULE_INTERVIEW_URL
-} from '../apiConstants/constants';
+} from '../constants/apiConstants';
 
 export const getMyCandidates = async () => {
     try {
