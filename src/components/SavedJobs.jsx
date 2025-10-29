@@ -77,6 +77,7 @@ const SavedJobs = () => {
         type: "success",
         message: "Successfully applied to the job!",
       });
+      handleFetchSavedJobs();
     } catch (err) {
       console.error("Error applying for job:", err);
       setNotification({

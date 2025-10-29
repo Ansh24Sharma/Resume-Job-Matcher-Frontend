@@ -461,6 +461,36 @@
   font-size: 16px;
 }
 
+/* Quill Editor Styles */
+.quillEditor {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.quillEditor :global(.ql-container) {
+  min-height: 200px;
+  font-size: 15px;
+  border-radius: 0 0 8px 8px;
+  font-family: inherit;
+}
+
+.quillEditor :global(.ql-editor) {
+  min-height: 200px;
+  line-height: 1.6;
+}
+
+.quillEditor :global(.ql-toolbar) {
+  border-radius: 8px 8px 0 0;
+  background: #f7fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.quillEditor :global(.ql-editor.ql-blank::before) {
+  color: #a0aec0;
+  font-style: normal;
+}
+
 @media (max-width: 768px) {
   .formRow {
     grid-template-columns: 1fr;

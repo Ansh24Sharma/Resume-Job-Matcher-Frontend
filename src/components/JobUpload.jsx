@@ -1,4 +1,6 @@
 import React, { useState, useRef } from "react";
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 import styles from "./JobUpload.module.css";
 import { uploadJob, postJob } from "../api/jobs";
 import { Notification } from "../assets/Notification";
@@ -22,6 +24,27 @@ const JobUpload = () => {
     skills: ""
   });
   const fileInputRef = useRef(null);
+  const quillRef = useRef(null);
+
+  // Quill editor modules configuration
+  const quillModules = {
+    toolbar: [
+      [{ 'header': [1, 2, 3, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      [{ 'indent': '-1'}, { 'indent': '+1' }],
+      ['link'],
+      [{ 'align': [] }],
+      ['clean']
+    ],
+  };
+
+  const quillFormats = [
+    'header',
+    'bold', 'italic', 'underline', 'strike',
+    'list', 'bullet', 'indent',
+    'link', 'align'
+  ];
 
   const showNotification = (type, message) => {
     setNotification({ type, message });
@@ -75,6 +98,10 @@ const JobUpload = () => {
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setJobForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleDescriptionChange = (content) => {
+    setJobForm((prev) => ({ ...prev, description: content }));
   };
 
   const handleFileUpload = async () => {
@@ -442,20 +469,20 @@ const JobUpload = () => {
                 />
               </div>
             </div>
-            {/* Description */}
+            {/* Description with Quill Editor */}
             <div className={styles.inputGroup}>
               <label htmlFor="description" className={styles.label}>
                 Job Description *
               </label>
-              <textarea
-                id="description"
-                name="description"
+              <ReactQuill
+                ref={quillRef}
+                theme="snow"
                 value={jobForm.description}
-                onChange={handleFormChange}
-                className={styles.textarea}
-                rows={6}
+                onChange={handleDescriptionChange}
+                modules={quillModules}
+                formats={quillFormats}
                 placeholder="Describe the role, responsibilities, and what you're looking for..."
-                required
+                className={styles.quillEditor}
               />
             </div>
             {/* Skills */}

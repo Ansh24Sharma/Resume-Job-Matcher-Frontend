@@ -15,11 +15,13 @@ const UserProfile = () => {
     location: '',
     skills: [],
     experience: [],
+    education: [], // <-- new field
   });
 
   const [tempInput, setTempInput] = useState({
     skill: '',
     experience: '',
+    education: '', // <-- new field
   });
 
   useEffect(() => {
@@ -37,6 +39,7 @@ const UserProfile = () => {
         location: profileRes.location || '',
         skills: profileRes.skills || [],
         experience: profileRes.experience || [],
+        education: profileRes.education || [],
       });
     } catch (err) {
       console.error('Profile fetch error:', err);
@@ -65,6 +68,7 @@ const UserProfile = () => {
     }));
   };
 
+  // Add, remove for Skills
   const addSkill = () => {
     if (tempInput.skill.trim()) {
       setFormData((prev) => ({
@@ -74,7 +78,6 @@ const UserProfile = () => {
       setTempInput((prev) => ({ ...prev, skill: '' }));
     }
   };
-
   const removeSkill = (index) => {
     setFormData((prev) => ({
       ...prev,
@@ -82,6 +85,7 @@ const UserProfile = () => {
     }));
   };
 
+  // Add, remove for Experience
   const addExperience = () => {
     if (tempInput.experience.trim()) {
       setFormData((prev) => ({
@@ -91,11 +95,27 @@ const UserProfile = () => {
       setTempInput((prev) => ({ ...prev, experience: '' }));
     }
   };
-
   const removeExperience = (index) => {
     setFormData((prev) => ({
       ...prev,
       experience: prev.experience.filter((_, i) => i !== index),
+    }));
+  };
+
+  // Add, remove for Education
+  const addEducation = () => {
+    if (tempInput.education.trim()) {
+      setFormData((prev) => ({
+        ...prev,
+        education: [...prev.education, tempInput.education.trim()],
+      }));
+      setTempInput((prev) => ({ ...prev, education: '' }));
+    }
+  };
+  const removeEducation = (index) => {
+    setFormData((prev) => ({
+      ...prev,
+      education: prev.education.filter((_, i) => i !== index),
     }));
   };
 
@@ -128,8 +148,9 @@ const UserProfile = () => {
         location: profile.location || '',
         skills: profile.skills || [],
         experience: profile.experience || [],
+        education: profile.education || [],
       });
-      setTempInput({ skill: '', experience: '' });
+      setTempInput({ skill: '', experience: '', education: '' });
       setNotification(null);
     }
   };
@@ -240,6 +261,7 @@ const UserProfile = () => {
           />
         </div>
 
+        {/* Skills input */}
         <div className={styles.formGroup}>
           <label className={styles.label}>
             Skills <span className={styles.required}>*</span>
@@ -286,6 +308,7 @@ const UserProfile = () => {
           )}
         </div>
 
+        {/* Experience input */}
         <div className={styles.formGroup}>
           <label className={styles.label}>
             Experience <span className={styles.required}>*</span>
@@ -322,6 +345,53 @@ const UserProfile = () => {
                   <button
                     type="button"
                     onClick={() => removeExperience(index)}
+                    className={styles.removeButton}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Education input */}
+        <div className={styles.formGroup}>
+          <label className={styles.label}>
+            Education <span className={styles.required}>*</span>
+          </label>
+          <div className={styles.arrayInput}>
+            <input
+              type="text"
+              name="education"
+              value={tempInput.education}
+              onChange={handleTempInputChange}
+              className={styles.input}
+              placeholder="Enter education (e.g., B.Tech in Computer Science)"
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  addEducation();
+                }
+              }}
+            />
+            <button
+              type="button"
+              onClick={addEducation}
+              className={styles.addButton}
+              disabled={!tempInput.education.trim()}
+            >
+              Add
+            </button>
+          </div>
+          {formData.education.length > 0 && (
+            <div className={styles.arrayItemsList}>
+              {formData.education.map((edu, index) => (
+                <div key={index} className={styles.arrayItem}>
+                  {edu}
+                  <button
+                    type="button"
+                    onClick={() => removeEducation(index)}
                     className={styles.removeButton}
                   >
                     ×
