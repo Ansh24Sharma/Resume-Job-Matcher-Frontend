@@ -4,9 +4,10 @@ import 'react-quill-new/dist/quill.snow.css';
 import styles from "./JobUpload.module.css";
 import { uploadJob, postJob } from "../api/jobs";
 import { Notification } from "../assets/Notification";
+import BulkJobUpload from "./BulkJobUpload";
 
 const JobUpload = () => {
-  const [uploadMethod, setUploadMethod] = useState("file"); // file or form
+  const [uploadMethod, setUploadMethod] = useState("file"); // file, form, or bulk
   const [file, setFile] = useState(null);
   const [uploadStatus, setUploadStatus] = useState("idle");
   const [notification, setNotification] = useState(null);
@@ -75,7 +76,6 @@ const JobUpload = () => {
     if (selectedFile) {
       handleFileSelect(selectedFile);
     }
-    // Reset the input value to allow selecting the same file again if needed
     e.target.value = '';
   };
 
@@ -227,20 +227,13 @@ const JobUpload = () => {
   };
 
   const handleDropZoneClick = (e) => {
-    // Don't trigger file input if file already exists
-    if (file) {
-      return;
-    }
-    // Don't trigger if clicking on the browse button (it has its own handler)
-    if (e.target.closest('button')) {
-      return;
-    }
+    if (file) return;
+    if (e.target.closest('button')) return;
     triggerFileInput();
   };
 
   return (
     <div className={styles.jobUploadContainer}>
-      {/* Notification Component */}
       {notification && (
         <Notification
           type={notification.type}
@@ -258,16 +251,31 @@ const JobUpload = () => {
 
       <div className={styles.methodSelector}>
         <button
-          onClick={() => setUploadMethod("file")}
+          onClick={() => {
+            setUploadMethod("file");
+            setFile(null);
+          }}
           className={`${styles.methodButton} ${uploadMethod === "file" ? styles.active : ""}`}
         >
           <span className={styles.methodIcon}>📄</span> Upload File
         </button>
         <button
-          onClick={() => setUploadMethod("form")}
+          onClick={() => {
+            setUploadMethod("form");
+            setFile(null);
+          }}
           className={`${styles.methodButton} ${uploadMethod === "form" ? styles.active : ""}`}
         >
           <span className={styles.methodIcon}>✏️</span> Fill Form
+        </button>
+        <button
+          onClick={() => {
+            setUploadMethod("bulk");
+            setFile(null);
+          }}
+          className={`${styles.methodButton} ${uploadMethod === "bulk" ? styles.active : ""}`}
+        >
+          <span className={styles.methodIcon}>📊</span> Bulk Upload
         </button>
       </div>
 
@@ -344,7 +352,6 @@ const JobUpload = () => {
             </div>
           )}
           
-          {/* Loading indicator during upload */}
           {uploadStatus === "uploading" && (
             <div className={styles.uploadingIndicator}>
               <div className={styles.spinner}></div>
@@ -352,10 +359,11 @@ const JobUpload = () => {
             </div>
           )}
         </div>
+      ) : uploadMethod === "bulk" ? (
+        <BulkJobUpload />
       ) : (
         <div className={styles.formSection}>
           <form onSubmit={handleFormSubmit} className={styles.jobForm}>
-            {/* Job Title */}
             <div className={styles.formRow}>
               <div className={styles.inputGroup}>
                 <label htmlFor="title" className={styles.label}>
@@ -387,7 +395,6 @@ const JobUpload = () => {
                 />
               </div>
             </div>
-            {/* Location and Job Type */}
             <div className={styles.formRow}>
               <div className={styles.inputGroup}>
                 <label htmlFor="location" className={styles.label}>
@@ -421,7 +428,6 @@ const JobUpload = () => {
                 </select>
               </div>
             </div>
-            {/* Experience and Salary */}
             <div className={styles.formRow}>
               <div className={styles.inputGroup}>
                 <label htmlFor="experience" className={styles.label}>
@@ -452,7 +458,6 @@ const JobUpload = () => {
                 />
               </div>
             </div>
-            {/* Education */}
             <div className={styles.formRow}>
               <div className={styles.inputGroup}>
                 <label htmlFor="education" className={styles.label}>
@@ -469,7 +474,6 @@ const JobUpload = () => {
                 />
               </div>
             </div>
-            {/* Description with Quill Editor */}
             <div className={styles.inputGroup}>
               <label htmlFor="description" className={styles.label}>
                 Job Description *
@@ -485,7 +489,6 @@ const JobUpload = () => {
                 className={styles.quillEditor}
               />
             </div>
-            {/* Skills */}
             <div className={styles.inputGroup}>
               <label htmlFor="skills" className={styles.label}>
                 Required Skills

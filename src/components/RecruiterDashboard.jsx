@@ -19,7 +19,7 @@ const RecruiterDashboard = () => {
     { id: "candidates", label: "Candidates", icon: "👥" },
     { id: "matches", label: "All Matches", icon: "🎯" },
     { id: "all-jobs", label: "All Jobs", icon: "📋" },
-    { id: "post-job", label: "Post New Job", icon: "➕" },
+    { id: "post-job", label: "Add New Job", icon: "➕" },
     { id: "analytics", label: "Analytics", icon: "📈" }
   ];
 

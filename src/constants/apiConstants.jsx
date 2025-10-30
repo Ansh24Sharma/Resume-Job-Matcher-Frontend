@@ -12,6 +12,7 @@ export const GET_JOBS_BY_CREATOR = `${API_BASE_URL}/job/getJobsByCreator`;
 export const SAVE_JOB_URL = `${API_BASE_URL}/recommendation/saveJob`;
 export const GET_SAVED_JOBS_URL = `${API_BASE_URL}/recommendation/getSavedJobs`;
 export const UPDATE_JOBS_URL = `${API_BASE_URL}/job/updateJob`;
+export const BULK_UPLOAD_JOBS_URL = `${API_BASE_URL}/job/bulkUploadJobs`;
 
 // User Profile API URLs
 export const GET_MY_PROFILE_URL = `${API_BASE_URL}/profile/myProfile`;

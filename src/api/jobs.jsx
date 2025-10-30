@@ -1,5 +1,5 @@
 import api from "./api";
-import { UPLOAD_JOB_URL, POST_JOB_URL, GET_ALL_JOBS_URL, APPLY_FOR_JOB_URL, SAVE_JOB_URL, GET_SAVED_JOBS_URL, GET_JOBS_BY_CREATOR, UPDATE_JOBS_URL } from "../constants/apiConstants";
+import { UPLOAD_JOB_URL, POST_JOB_URL, GET_ALL_JOBS_URL, APPLY_FOR_JOB_URL, SAVE_JOB_URL, GET_SAVED_JOBS_URL, GET_JOBS_BY_CREATOR, UPDATE_JOBS_URL, BULK_UPLOAD_JOBS_URL } from "../constants/apiConstants";
 
 export const uploadJob = async(file) => {
     const formData = new FormData();
@@ -16,6 +16,24 @@ export const postJob = async (jobData) => {
     const response = await api.post(POST_JOB_URL, jobData);
     return response.data;
   } catch (error) {
+    throw error;
+  }
+};
+
+export const bulkUploadJobs = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await api.post(BULK_UPLOAD_JOBS_URL, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Bulk upload error:', error);
     throw error;
   }
 };
