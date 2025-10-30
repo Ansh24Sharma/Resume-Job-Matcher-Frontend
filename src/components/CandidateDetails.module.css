@@ -36,6 +36,11 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
+.statCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
 .statValue {
   font-size: 2rem;
   font-weight: 700;
@@ -63,7 +68,7 @@
 
 .searchField {
   width: 100%;
-  padding: 0.875rem 1rem;
+  padding: 0.5rem 1rem;
   border: 2px solid #e0e0e0;
   border-radius: 8px;
   font-size: 1rem;
@@ -83,7 +88,7 @@
 
 .filterSelect,
 .filterInput {
-  padding: 0.75rem;
+  padding: 0.5rem;
   border: 2px solid #e0e0e0;
   border-radius: 8px;
   font-size: 0.875rem;

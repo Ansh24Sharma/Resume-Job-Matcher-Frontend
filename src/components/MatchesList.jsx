@@ -9,6 +9,8 @@ const MatchesList = () => {
   const [selectedMatch, setSelectedMatch] = useState(null);
   const [matchExplanation, setMatchExplanation] = useState(null);
   const [loadingExplanation, setLoadingExplanation] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [scoreFilter, setScoreFilter] = useState("all");
 
   useEffect(() => {
     fetchMatches();
@@ -95,6 +97,48 @@ const MatchesList = () => {
     );
   };
 
+  // Filter matches based on search and score
+  const filteredMatches = matches.filter((match) => {
+    const matchScore = formatScore(match.final_score);
+    
+    // Search filter
+    const matchesSearch = 
+      match.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      match.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      match.job_id?.toString().includes(searchTerm) ||
+      match.resume_id?.toString().includes(searchTerm);
+
+    // Score filter
+    let matchesScore = true;
+    switch (scoreFilter) {
+      case "excellent":
+        matchesScore = matchScore >= 90;
+        break;
+      case "verygood":
+        matchesScore = matchScore >= 80 && matchScore < 90;
+        break;
+      case "good":
+        matchesScore = matchScore >= 70 && matchScore < 80;
+        break;
+      case "fair":
+        matchesScore = matchScore >= 60 && matchScore < 70;
+        break;
+      case "poor":
+        matchesScore = matchScore < 60;
+        break;
+      case "all":
+      default:
+        matchesScore = true;
+    }
+
+    return matchesSearch && matchesScore;
+  });
+
+  const clearFilters = () => {
+    setSearchTerm("");
+    setScoreFilter("all");
+  };
+
   if (loading) {
     return (
       <div className={styles.container}>
@@ -122,19 +166,96 @@ const MatchesList = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h3 className={styles.sectionTitle}>Top Job-Candidate Matches</h3>
+        <div className={styles.headerContent}>
+          <h3 className={styles.sectionTitle}>Top Job-Candidate Matches</h3>
+          <p className={styles.subtitle}>
+            Showing {filteredMatches.length} of {matches.length} matches
+          </p>
+        </div>
         <button onClick={fetchMatches} className={styles.refreshButton}>
           🔄 Refresh
         </button>
       </div>
 
-      {matches.length === 0 ? (
+      {/* Score Distribution Summary */}
+      <div className={styles.statsContainer}>
+        <div className={styles.statCard}>
+          <div className={styles.statNumber}>{matches.filter(m => formatScore(m.final_score) >= 90).length}</div>
+          <div className={styles.statLabel}>Excellent</div>
+        </div>
+        <div className={styles.statCard}>
+          <div className={styles.statNumber}>{matches.filter(m => formatScore(m.final_score) >= 80 && formatScore(m.final_score) < 90).length}</div>
+          <div className={styles.statLabel}>Very Good</div>
+        </div>
+        <div className={styles.statCard}>
+          <div className={styles.statNumber}>{matches.filter(m => formatScore(m.final_score) >= 70 && formatScore(m.final_score) < 80).length}</div>
+          <div className={styles.statLabel}>Good</div>
+        </div>
+        <div className={styles.statCard}>
+          <div className={styles.statNumber}>{matches.filter(m => formatScore(m.final_score) >= 60 && formatScore(m.final_score) < 70).length}</div>
+          <div className={styles.statLabel}>Fair</div>
+        </div>
+        <div className={styles.statCard}>
+          <div className={styles.statNumber}>{matches.filter(m => formatScore(m.final_score) < 60).length}</div>
+          <div className={styles.statLabel}>Poor</div>
+        </div>
+      </div>
+
+      {/* Search and Filter Section */}
+      <div className={styles.filterSection}>
+        <div className={styles.searchContainer}>
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search by job title, candidate name, or ID..."
+            className={styles.searchInput}
+          />
+          {searchTerm && (
+            <button 
+              onClick={() => setSearchTerm("")} 
+              className={styles.clearSearchButton}
+            >
+              ✕
+            </button>
+          )}
+        </div>
+
+        <div className={styles.filterControls}>
+          <label className={styles.filterLabel}>Filter by Score:</label>
+          <select
+            value={scoreFilter}
+            onChange={(e) => setScoreFilter(e.target.value)}
+            className={styles.filterSelect}
+          >
+            <option value="all">All Scores</option>
+            <option value="excellent">Excellent (90-100%)</option>
+            <option value="verygood">Very Good (80-89%)</option>
+            <option value="good">Good (70-79%)</option>
+            <option value="fair">Fair (60-69%)</option>
+            <option value="poor">Poor (&lt;60%)</option>
+          </select>
+
+          {(searchTerm || scoreFilter !== "all") && (
+            <button onClick={clearFilters} className={styles.clearFiltersButton}>
+              Clear Filters
+            </button>
+          )}
+        </div>
+      </div>
+
+      {filteredMatches.length === 0 ? (
         <div className={styles.emptyState}>
           <p>No matches found</p>
+          {(searchTerm || scoreFilter !== "all") && (
+            <button onClick={clearFilters} className={styles.clearFiltersButton}>
+              Clear Filters
+            </button>
+          )}
         </div>
       ) : (
         <div className={styles.matchesList}>
-          {matches.map((match) => (
+          {filteredMatches.map((match) => (
             <div key={match.id || `${match.resume_id}-${match.job_id}`} className={styles.matchCard}>
               <div className={styles.matchInfo}>
                 <h4 className={styles.matchTitle}>{match.title}</h4>

@@ -48,7 +48,7 @@ EXAMPLE FORMAT YOU MUST FOLLOW:
 
 
 IMPORTANT GUIDELINES:
-- Answer whatever asks even if it is not in the data
+- Answer whatever userasks even if it is not in the data provided
 - Be encouraging but realistic
 - Always reference the user's actual skills and experience from their profile
 - Mention specific job titles and companies from available listings
@@ -59,6 +59,7 @@ IMPORTANT GUIDELINES:
 - When presenting jobs, DO NOT categorize or mention different job types. Simply present all jobs as "Available Positions" or "Job Openings".
 
 YOUR ROLE:
+- Answer all types of questions about anything user asks
 - Be interactive and engaging with the user and give suggestions
 - Present ALL available job openings when asked
 - Analyze user's profile against job requirements
@@ -160,8 +161,6 @@ What would you like to know?`;
     try {
       // Create context with actual API data
       const context = createChatContext(userData, resumeData, jobsData);
-      
-      console.log('Sending context to AI:', context); // Debug log
 
       const data = await sendMessage(input, SYSTEM_PROMPT, context);
 
