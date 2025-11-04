@@ -4,7 +4,7 @@ import JobUpload from "./JobUpload";
 import DisplayAllJobs from "./DisplayAllJobs";
 import CandidateDetails from "./CandidateDetails";
 import MatchesList from "./MatchesList";
-import DarkVeil from "../animated_css/Darkviel";
+import DarkVeil from "../../animated_css/Darkviel";
 
 const RecruiterDashboard = () => {
   const [activeTab, setActiveTab] = useState("candidates");

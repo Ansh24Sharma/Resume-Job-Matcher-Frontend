@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import styles from "./Dashboard.module.css";
-import DarkVeil from "../animated_css/Darkviel";
+import DarkVeil from "../../animated_css/Darkviel";
 import ResumeUpload from "./ResumeUpload";
-import Recommendations from "./Recommendations";
-import UserProfile from "./UserProfile";
-import SavedJobs from "./SavedJobs";
-import Chatbot from "./ChatBot";
-import { getUserData } from "../utils/storage";
-import { getMyProfile } from "../api/user_profile";
-import { getAllJobs } from "../api/jobs";
+import Recommendations from "../Recommendations";
+import UserProfile from "../UserProfile";
+import SavedJobs from "../SavedJobs";
+import Chatbot from "./Chatbot";
+import { getUserData } from "../../utils/storage";
+import { getMyProfile } from "../../api/user_profile";
+import { getAllJobs } from "../../api/jobs";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("recommendations");

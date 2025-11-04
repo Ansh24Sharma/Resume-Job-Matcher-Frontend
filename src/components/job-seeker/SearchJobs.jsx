@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getAllJobs } from '../api/jobs';
+import { getAllJobs } from '../../api/jobs';
 import styles from './SearchJobs.module.css';
 
 const SearchJobs = () => {

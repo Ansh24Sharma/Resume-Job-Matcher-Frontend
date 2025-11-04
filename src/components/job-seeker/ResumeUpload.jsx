@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import styles from "./ResumeUpload.module.css";
-import { uploadResume } from "../api/resumes";
-import { Notification } from "../assets/Notification";
+import { uploadResume } from "../../api/resumes";
+import { Notification } from "../../assets/Notification";
 
 const ResumeUpload = () => {
   const [file, setFile] = useState(null);

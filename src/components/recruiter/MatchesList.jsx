@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getMatches, getMatchExplanation } from "../api/matches";
+import { getMatches, getMatchExplanation } from "../../api/matches";
 import styles from "./MatchesList.module.css";
 
 const MatchesList = () => {

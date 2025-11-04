@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import styles from "./BulkJobUpload.module.css";
-import { bulkUploadJobs } from "../api/jobs";
-import { Notification } from "../assets/Notification";
+import { bulkUploadJobs } from "../../api/jobs";
+import { Notification } from "../../assets/Notification";
 
 const BulkJobUpload = () => {
   const [file, setFile] = useState(null);

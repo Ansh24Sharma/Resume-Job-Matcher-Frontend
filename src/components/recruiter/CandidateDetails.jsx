@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import styles from "./CandidateDetails.module.css";
-import { getMyCandidates, getCandidateStatistics, updateCandidateStatus, scheduleInterview } from "../api/candidates";
-import { downloadResume } from "../api/resumes";
-import { Notification } from "../assets/Notification";
+import { getMyCandidates, getCandidateStatistics, updateCandidateStatus, scheduleInterview } from "../../api/candidates";
+import { downloadResume } from "../../api/resumes";
+import { Notification } from "../../assets/Notification";
 
 const CandidateDetails = () => {
   const [candidates, setCandidates] = useState([]);

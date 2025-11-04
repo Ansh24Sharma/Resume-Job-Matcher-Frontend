@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { getJobsByCreator, updateJob } from '../api/jobs';
-import { Notification } from '../assets/Notification';
+import { getJobsByCreator, updateJob } from '../../api/jobs';
+import { Notification } from '../../assets/Notification';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import styles from './DisplayAllJobs.module.css';

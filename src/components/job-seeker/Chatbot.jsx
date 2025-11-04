@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { sendMessage, createChatContext } from '../api/chatbot';
-import { getUserData } from '../utils/storage';
-import ChatMessage from '../assets/ChatMessage';
+import { sendMessage, createChatContext } from '../../api/chatbot';
+import { getUserData } from '../../utils/storage';
+import ChatMessage from '../../assets/ChatMessage';
 import styles from './Chatbot.module.css';
 
 const Chatbot = ({ resumeData = null, jobsData = null }) => {

@@ -2,8 +2,8 @@ import React, { useState, useRef } from "react";
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import styles from "./JobUpload.module.css";
-import { uploadJob, postJob } from "../api/jobs";
-import { Notification } from "../assets/Notification";
+import { uploadJob, postJob } from "../../api/jobs";
+import { Notification } from "../../assets/Notification";
 import BulkJobUpload from "./BulkJobUpload";
 
 const JobUpload = () => {
