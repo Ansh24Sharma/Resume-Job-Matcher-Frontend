@@ -418,6 +418,10 @@
   padding: 1.5rem;
 }
 
+.statusChangeForm {
+  padding: 1.5rem;
+}
+
 .candidatePreview {
   background: #f8f9fa;
   padding: 1rem;

@@ -34,16 +34,25 @@ export const getCandidateDetail = async (candidateId) => {
     }
 };
 
-export const updateCandidateStatus = async (candidateId, status) => {
-    try {
-        const response = await api.patch(UPDATE_CANDIDATE_STATUS_URL, {
-            candidate_id: candidateId,
-            status: status
-        });
-        return response.data;
-    } catch (error) {
-        throw error;
+export const updateCandidateStatus = async (candidateId, newStatus, emailData = null) => {
+  const payload = {
+    candidate_id: candidateId,
+    status: newStatus
+  };
+  
+  // Add email data for hired/rejected statuses
+  if (emailData) {
+    payload.candidate_email = emailData.candidate_email;
+    payload.candidate_name = emailData.candidate_name;
+    payload.job_title = emailData.job_title;
+    payload.company = emailData.company;
+    if (emailData.additional_notes) {
+      payload.additional_notes = emailData.additional_notes;
     }
+  }
+  
+  const response = await api.patch(UPDATE_CANDIDATE_STATUS_URL, payload);
+  return response.data;
 };
 
 export const scheduleInterview = async (candidateId, interviewData) => {

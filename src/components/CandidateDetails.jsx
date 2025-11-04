@@ -17,7 +17,16 @@ const CandidateDetails = () => {
     status: ""
   });
   const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [showStatusChangeModal, setShowStatusChangeModal] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
+  const [pendingStatus, setPendingStatus] = useState(null);
+  const [statusChangeData, setStatusChangeData] = useState({
+    candidate_email: "",
+    candidate_name: "",
+    job_title: "",
+    company: "",
+    additional_notes: ""
+  });
   const [interviewData, setInterviewData] = useState({
     interview_date: "",
     interview_time: "",
@@ -126,26 +135,89 @@ const CandidateDetails = () => {
     }
   };
 
-  const handleStatusChange = async (candidateId, newStatus) => {
+  const handleStatusChange = async (candidate, newStatus) => {
+    // If changing to hired or rejected, show confirmation modal
+    if (newStatus === "hired" || newStatus === "rejected") {
+      setSelectedCandidate(candidate);
+      setPendingStatus(newStatus);
+      setStatusChangeData({
+        candidate_email: candidate.email,
+        candidate_name: candidate.name,
+        job_title: candidate.job_title,
+        company: candidate.company,
+        additional_notes: ""
+      });
+      setShowStatusChangeModal(true);
+    } else {
+      // For other status changes, update directly
+      await updateStatus(candidate.candidate_id, newStatus);
+    }
+  };
+
+  const updateStatus = async (candidateId, newStatus, emailData = null) => {
     try {
-      await updateCandidateStatus(candidateId, newStatus);
+      const payload = {
+        candidate_id: candidateId,
+        status: newStatus
+      };
+      
+      // Add email data if provided (for hired/rejected)
+      if (emailData) {
+        payload.candidate_email = emailData.candidate_email;
+        payload.candidate_name = emailData.candidate_name;
+        payload.job_title = emailData.job_title;
+        payload.company = emailData.company;
+        if (emailData.additional_notes) {
+          payload.additional_notes = emailData.additional_notes;
+        }
+      }
+
+      await updateCandidateStatus(candidateId, newStatus, emailData);
+      
       setCandidates(prev =>
         prev.map(candidate =>
-          candidate.candidate_id === candidateId ? { ...candidate, status: newStatus } : candidate
+          candidate.candidate_id === candidateId 
+            ? { ...candidate, status: newStatus } 
+            : candidate
         )
       );
+      
       loadStatistics();
+      
       setNotification({
         type: "success",
-        message: `Candidate status updated to ${newStatus.toUpperCase()}.`
+        message: `Candidate status updated to ${newStatus.toUpperCase()}.${
+          (newStatus === "hired" || newStatus === "rejected") 
+            ? " Email sent to candidate." 
+            : ""
+        }`
       });
     } catch (error) {
       console.error("Error updating status:", error);
       setNotification({
         type: "error",
-        message: "Failed to update candidate status."
+        message: error.response?.data?.detail || "Failed to update candidate status."
       });
     }
+  };
+
+  const handleStatusChangeSubmit = async () => {
+    await updateStatus(
+      selectedCandidate.candidate_id, 
+      pendingStatus,
+      statusChangeData
+    );
+    
+    setShowStatusChangeModal(false);
+    setSelectedCandidate(null);
+    setPendingStatus(null);
+    setStatusChangeData({
+      candidate_email: "",
+      candidate_name: "",
+      job_title: "",
+      company: "",
+      additional_notes: ""
+    });
   };
 
   const handleScheduleInterview = (candidate) => {
@@ -334,7 +406,7 @@ const CandidateDetails = () => {
                   
                   <select
                     value={candidate.status}
-                    onChange={(e) => handleStatusChange(candidate.candidate_id, e.target.value)}
+                    onChange={(e) => handleStatusChange(candidate, e.target.value)}
                     className={styles.statusSelect}
                   >
                     <option value="available">Available</option>
@@ -397,6 +469,7 @@ const CandidateDetails = () => {
         )}
       </div>
 
+      {/* Interview Scheduling Modal */}
       {showScheduleModal && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>
@@ -491,6 +564,139 @@ const CandidateDetails = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Status Change Modal for Hired/Rejected */}
+      {showStatusChangeModal && (
+        <div className={styles.modal}>
+          <div className={styles.modalContent}>
+            <div className={styles.modalHeader}>
+              <h3>Confirm {pendingStatus === 'hired' ? 'Hiring' : 'Rejection'}</h3>
+              <button 
+                className={styles.closeButton}
+                onClick={() => {
+                  setShowStatusChangeModal(false);
+                  setSelectedCandidate(null);
+                  setPendingStatus(null);
+                }}
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className={styles.statusChangeForm}>
+              <div className={styles.candidatePreview}>
+                <p><strong>Candidate:</strong> {statusChangeData.candidate_name}</p>
+                <p><strong>Email:</strong> {statusChangeData.candidate_email}</p>
+                <p><strong>Position:</strong> {statusChangeData.job_title}</p>
+                <p><strong>Company:</strong> {statusChangeData.company}</p>
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>Candidate Email (Editable)</label>
+                <input
+                  type="email"
+                  value={statusChangeData.candidate_email}
+                  onChange={(e) => setStatusChangeData(prev => ({ 
+                    ...prev, 
+                    candidate_email: e.target.value 
+                  }))}
+                  required
+                  className={styles.formInput}
+                />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>Candidate Name (Editable)</label>
+                <input
+                  type="text"
+                  value={statusChangeData.candidate_name}
+                  onChange={(e) => setStatusChangeData(prev => ({ 
+                    ...prev, 
+                    candidate_name: e.target.value 
+                  }))}
+                  required
+                  className={styles.formInput}
+                />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>Job Title (Editable)</label>
+                <input
+                  type="text"
+                  value={statusChangeData.job_title}
+                  onChange={(e) => setStatusChangeData(prev => ({ 
+                    ...prev, 
+                    job_title: e.target.value 
+                  }))}
+                  required
+                  className={styles.formInput}
+                />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>Company (Editable)</label>
+                <input
+                  type="text"
+                  value={statusChangeData.company}
+                  onChange={(e) => setStatusChangeData(prev => ({ 
+                    ...prev, 
+                    company: e.target.value 
+                  }))}
+                  required
+                  className={styles.formInput}
+                />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>Additional Notes (Optional)</label>
+                <textarea
+                  value={statusChangeData.additional_notes}
+                  onChange={(e) => setStatusChangeData(prev => ({ 
+                    ...prev, 
+                    additional_notes: e.target.value 
+                  }))}
+                  placeholder={
+                    pendingStatus === 'hired' 
+                      ? "Add any additional information about onboarding, start date, etc..." 
+                      : "Add feedback or reasons for rejection (will be sent to candidate)..."
+                  }
+                  className={styles.formTextarea}
+                  rows="4"
+                />
+                <small style={{ color: '#6b7280', fontSize: '12px', display: 'block', marginTop: '6px' }}>
+                  {pendingStatus === 'hired' 
+                    ? "This information will be included in the hiring email sent to the candidate."
+                    : "Constructive feedback helps candidates improve. This will be included in the rejection email."}
+                </small>
+              </div>
+
+              <div className={styles.modalFooter}>
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    setShowStatusChangeModal(false);
+                    setSelectedCandidate(null);
+                    setPendingStatus(null);
+                  }}
+                  className={styles.cancelButton}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="button"
+                  onClick={handleStatusChangeSubmit}
+                  className={styles.submitButton}
+                  style={{
+                    backgroundColor: pendingStatus === 'hired' ? '#10b981' : '#ef4444'
+                  }}
+                >
+                  {pendingStatus === 'hired' ? 'Confirm Hiring & Send Email' : 'Confirm Rejection & Send Email'}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
