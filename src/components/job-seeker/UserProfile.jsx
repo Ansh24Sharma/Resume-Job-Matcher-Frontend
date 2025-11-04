@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { getMyProfile, updateProfile } from '../api/user_profile';
-import { Notification } from '../assets/Notification';
+import { getMyProfile, updateProfile } from '../../api/user_profile';
+import { Notification } from '../../assets/Notification';
 import styles from './UserProfile.module.css';
 
 const UserProfile = () => {

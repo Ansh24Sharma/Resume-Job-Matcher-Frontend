@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import styles from "./AuthForm.module.css";
-import { signup } from "../api/auth";
-import DarkVeil from "../animated_css/Darkviel";
+import { signup } from "../../api/auth";
+import DarkVeil from "../../animated_css/Darkviel";
 
 const SignupForm = () => {
   const [formData, setFormData] = useState({

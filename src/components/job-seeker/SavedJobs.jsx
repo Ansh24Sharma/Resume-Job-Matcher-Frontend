@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styles from "./SavedJobs.module.css";
-import { getSavedJobs, applyForJob } from "../api/jobs";
-import { Notification } from "../assets/Notification";
+import { getSavedJobs, applyForJob } from "../../api/jobs";
+import { Notification } from "../../assets/Notification";
 
 const SavedJobs = () => {
   const [savedJobs, setSavedJobs] = useState([]);

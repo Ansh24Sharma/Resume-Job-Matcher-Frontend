@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import styles from "./Recommendations.module.css";
-import { getRecommendations } from "../api/recommendations";
-import { saveJob } from "../api/jobs";
-import { Notification } from "../assets/Notification";
+import { getRecommendations } from "../../api/recommendations";
+import { saveJob } from "../../api/jobs";
+import { Notification } from "../../assets/Notification";
 
 const Recommendations = () => {
   const [recommendations, setRecommendations] = useState([]);

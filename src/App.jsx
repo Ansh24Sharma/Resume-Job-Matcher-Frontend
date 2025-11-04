@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Routes, Route, useNavigate, Navigate, useLocation } from "react-router-dom";
 import styles from "./App.module.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Dashboard from "./components/Dashboard";
-import LoginForm from "./components/LoginForm";
-import SignupForm from "./components/SignUpForm";
-import RecruiterDashboard from "./components/RecruiterDashboard";
+import Dashboard from "./components/job-seeker/Dashboard";
+import LoginForm from "./components/auth/LoginForm";
+import SignupForm from "./components/auth/SignUpForm";
+import RecruiterDashboard from "./components/recruiter/RecruiterDashboard";
 import { getUserData, getUserRole, isAuthenticated, removeToken } from "./utils/storage";
 // import Logo from "./assets/logo.png";
 
