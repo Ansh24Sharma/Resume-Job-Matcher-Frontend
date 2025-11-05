@@ -42,6 +42,7 @@ export const updateCandidateStatus = async (candidateId, newStatus, emailData = 
   
   // Add email data for hired/rejected statuses
   if (emailData) {
+    payload.match_id = emailData.match_id;
     payload.candidate_email = emailData.candidate_email;
     payload.candidate_name = emailData.candidate_name;
     payload.job_title = emailData.job_title;

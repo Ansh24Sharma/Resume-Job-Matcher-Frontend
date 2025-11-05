@@ -21,6 +21,7 @@ const CandidateDetails = () => {
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [pendingStatus, setPendingStatus] = useState(null);
   const [statusChangeData, setStatusChangeData] = useState({
+    match_id: null,
     candidate_email: "",
     candidate_name: "",
     job_title: "",
@@ -141,6 +142,7 @@ const CandidateDetails = () => {
       setSelectedCandidate(candidate);
       setPendingStatus(newStatus);
       setStatusChangeData({
+        match_id: candidate.match_id,
         candidate_email: candidate.email,
         candidate_name: candidate.name,
         job_title: candidate.job_title,
