@@ -14,7 +14,8 @@ const CandidateDetails = () => {
     skills: "",
     location: "",
     score: "",
-    status: ""
+    status: "",
+    saveStatus: "applied"
   });
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [showStatusChangeModal, setShowStatusChangeModal] = useState(false);
@@ -37,6 +38,8 @@ const CandidateDetails = () => {
   });
   const [downloadingResume, setDownloadingResume] = useState(null);
   const [notification, setNotification] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const candidatesPerPage = 5;
 
   useEffect(() => {
     loadCandidates();
@@ -73,6 +76,15 @@ const CandidateDetails = () => {
   };
 
   const filteredCandidates = candidates.filter(candidate => {
+    // Filter based on save_status
+    if (filterCriteria.saveStatus === "applied" && candidate.save_status === "closed") {
+      return false;
+    }
+    
+    if (filterCriteria.saveStatus === "closed" && candidate.save_status !== "closed") {
+      return false;
+    }
+
     const matchesSearch = candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       candidate.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       candidate.skills.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -93,6 +105,17 @@ const CandidateDetails = () => {
 
     return matchesSearch && matchesExperience && matchesSkills && matchesLocation && matchesScore && matchesStatus;
   });
+
+  // Pagination logic
+  const indexOfLastCandidate = currentPage * candidatesPerPage;
+  const indexOfFirstCandidate = indexOfLastCandidate - candidatesPerPage;
+  const currentCandidates = filteredCandidates.slice(indexOfFirstCandidate, indexOfLastCandidate);
+  const totalPages = Math.ceil(filteredCandidates.length / candidatesPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const getScoreColor = (score) => {
     const formattedScore = formatScore(score);
@@ -316,8 +339,23 @@ const CandidateDetails = () => {
         
         <div className={styles.filtersRow}>
           <select
+            value={filterCriteria.saveStatus}
+            onChange={(e) => {
+              setFilterCriteria(prev => ({ ...prev, saveStatus: e.target.value }));
+              setCurrentPage(1);
+            }}
+            className={styles.filterSelect}
+          >
+            <option value="applied">Applied</option>
+            <option value="closed">Closed</option>
+          </select>
+
+          <select
             value={filterCriteria.status}
-            onChange={(e) => setFilterCriteria(prev => ({ ...prev, status: e.target.value }))}
+            onChange={(e) => {
+              setFilterCriteria(prev => ({ ...prev, status: e.target.value }));
+              setCurrentPage(1);
+            }}
             className={styles.filterSelect}
           >
             <option value="">All Status</option>
@@ -330,7 +368,10 @@ const CandidateDetails = () => {
 
           <select
             value={filterCriteria.experience}
-            onChange={(e) => setFilterCriteria(prev => ({ ...prev, experience: e.target.value }))}
+            onChange={(e) => {
+              setFilterCriteria(prev => ({ ...prev, experience: e.target.value }));
+              setCurrentPage(1);
+            }}
             className={styles.filterSelect}
           >
             <option value="">All Experience</option>
@@ -342,7 +383,10 @@ const CandidateDetails = () => {
           <input
             type="text"
             value={filterCriteria.skills}
-            onChange={(e) => setFilterCriteria(prev => ({ ...prev, skills: e.target.value }))}
+            onChange={(e) => {
+              setFilterCriteria(prev => ({ ...prev, skills: e.target.value }));
+              setCurrentPage(1);
+            }}
             placeholder="Filter by skills"
             className={styles.filterInput}
           />
@@ -350,7 +394,10 @@ const CandidateDetails = () => {
           <input
             type="text"
             value={filterCriteria.location}
-            onChange={(e) => setFilterCriteria(prev => ({ ...prev, location: e.target.value }))}
+            onChange={(e) => {
+              setFilterCriteria(prev => ({ ...prev, location: e.target.value }));
+              setCurrentPage(1);
+            }}
             placeholder="Filter by location"
             className={styles.filterInput}
           />
@@ -358,7 +405,10 @@ const CandidateDetails = () => {
           <input
             type="number"
             value={filterCriteria.score}
-            onChange={(e) => setFilterCriteria(prev => ({ ...prev, score: e.target.value }))}
+            onChange={(e) => {
+              setFilterCriteria(prev => ({ ...prev, score: e.target.value }));
+              setCurrentPage(1);
+            }}
             placeholder="Min score"
             className={styles.filterInput}
             min="0"
@@ -378,98 +428,142 @@ const CandidateDetails = () => {
             <p>No candidates found matching your criteria</p>
           </div>
         ) : (
-          filteredCandidates.map((candidate) => (
-            <div key={candidate.candidate_id} className={styles.candidateCard}>
-              <div className={styles.candidateHeader}>
-                <div className={styles.candidateInfo}>
-                  <h4 className={styles.candidateName}>{candidate.name}</h4>
-                  <p className={styles.candidateEmail}>{candidate.email}</p>
-                  <div className={styles.candidateMeta}>
-                    <span className={styles.experience}>
-                      {candidate.experience.length} years experience
-                    </span>
-                    <span className={styles.location}>
-                      {candidate.location || "Location not specified"}
-                    </span>
-                    <span className={styles.uploadDate}>
-                      Uploaded: {formatDate(candidate.upload_date)}
-                    </span>
+          <>
+            {currentCandidates.map((candidate) => (
+              <div key={candidate.candidate_id} className={styles.candidateCard}>
+                <div className={styles.candidateHeader}>
+                  <div className={styles.candidateInfo}>
+                    <h4 className={styles.candidateName}>{candidate.name}</h4>
+                    <p className={styles.candidateEmail}>{candidate.email}</p>
+                    <div className={styles.candidateMeta}>
+                      <span className={styles.experience}>
+                        {candidate.experience.length} years experience
+                      </span>
+                      <span className={styles.location}>
+                        {candidate.location || "Location not specified"}
+                      </span>
+                      <span className={styles.uploadDate}>
+                        Uploaded: {formatDate(candidate.upload_date)}
+                      </span>
+                    </div>
+                    <div className={styles.jobInfo}>
+                      <strong>Applied for:</strong> {candidate.job_title} at {candidate.company}
+                    </div>
                   </div>
-                  <div className={styles.jobInfo}>
-                    <strong>Applied for:</strong> {candidate.job_title} at {candidate.company}
+                  
+                  <div className={styles.candidateActions}>
+                    <div className={`${styles.matchScore} ${getScoreColor(candidate.final_score)}`}>
+                      <span className={styles.scoreNumber}>{formatScore(candidate.final_score)}%</span>
+                      <span className={styles.scoreLabel}>Match</span>
+                    </div>
+                    
+                    <select
+                      value={candidate.status}
+                      onChange={(e) => handleStatusChange(candidate, e.target.value)}
+                      className={styles.statusSelect}
+                    >
+                      <option value="available">Available</option>
+                      <option value="interview_scheduled">Interview Scheduled</option>
+                      <option value="under_review">Under Review</option>
+                      <option value="hired">Hired</option>
+                      <option value="rejected">Rejected</option>
+                    </select>
                   </div>
                 </div>
                 
-                <div className={styles.candidateActions}>
-                  <div className={`${styles.matchScore} ${getScoreColor(candidate.final_score)}`}>
-                    <span className={styles.scoreNumber}>{formatScore(candidate.final_score)}%</span>
-                    <span className={styles.scoreLabel}>Match</span>
+                <div className={styles.candidateSkills}>
+                  <span className={styles.skillsLabel}>Skills:</span>
+                  <div className={styles.skillsTags}>
+                    {candidate.skills.map((skill, index) => (
+                      <span key={index} className={styles.skillTag}>
+                        {skill}
+                      </span>
+                    ))}
                   </div>
-                  
-                  <select
-                    value={candidate.status}
-                    onChange={(e) => handleStatusChange(candidate, e.target.value)}
-                    className={styles.statusSelect}
-                  >
-                    <option value="available">Available</option>
-                    <option value="interview_scheduled">Interview Scheduled</option>
-                    <option value="under_review">Under Review</option>
-                    <option value="hired">Hired</option>
-                    <option value="rejected">Rejected</option>
-                  </select>
                 </div>
-              </div>
-              
-              <div className={styles.candidateSkills}>
-                <span className={styles.skillsLabel}>Skills:</span>
-                <div className={styles.skillsTags}>
-                  {candidate.skills.map((skill, index) => (
-                    <span key={index} className={styles.skillTag}>
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
 
-              <div className={styles.scoreBreakdown}>
-                <div className={styles.scoreItem}>
-                  <span>BERT Score:</span>
-                  <span>{formatScore(candidate.bert_score)}%</span>
+                <div className={styles.scoreBreakdown}>
+                  <div className={styles.scoreItem}>
+                    <span>BERT Score:</span>
+                    <span>{formatScore(candidate.bert_score)}%</span>
+                  </div>
+                  <div className={styles.scoreItem}>
+                    <span>Skill Score:</span>
+                    <span>{formatScore(candidate.skill_score)}%</span>
+                  </div>
+                  <div className={styles.scoreItem}>
+                    <span>Education Score:</span>
+                    <span>{formatScore(candidate.education_score)}%</span>
+                  </div>
+                  <div className={styles.scoreItem}>
+                    <span>Experience Score:</span>
+                    <span>{formatScore(candidate.experience_score)}%</span>
+                  </div>
                 </div>
-                <div className={styles.scoreItem}>
-                  <span>Skill Score:</span>
-                  <span>{formatScore(candidate.skill_score)}%</span>
-                </div>
-                <div className={styles.scoreItem}>
-                  <span>Education Score:</span>
-                  <span>{formatScore(candidate.education_score)}%</span>
-                </div>
-                <div className={styles.scoreItem}>
-                  <span>Experience Score:</span>
-                  <span>{formatScore(candidate.experience_score)}%</span>
+                
+                <div className={styles.candidateFooter}>
+                  <button 
+                    className={styles.downloadButton}
+                    onClick={() => handleDownloadResume(candidate)}
+                    disabled={downloadingResume === candidate.candidate_id}
+                  >
+                    {downloadingResume === candidate.candidate_id ? "Downloading..." : "Download Resume"}
+                  </button>
+                  <button 
+                    className={styles.scheduleButton}
+                    onClick={() => handleScheduleInterview(candidate)}
+                    disabled={candidate.status !== "available"}
+                  >
+                    Schedule Interview
+                  </button>
                 </div>
               </div>
-              
-              <div className={styles.candidateFooter}>
-                <button 
-                  className={styles.downloadButton}
-                  onClick={() => handleDownloadResume(candidate)}
-                  disabled={downloadingResume === candidate.candidate_id}
-                >
-                  {downloadingResume === candidate.candidate_id ? "Downloading..." : "Download Resume"}
-                </button>
-                <button 
-                  className={styles.scheduleButton}
-                  onClick={() => handleScheduleInterview(candidate)}
-                  disabled={candidate.status !== "available"}
-                >
-                  Schedule Interview
-                </button>
-              </div>
-            </div>
-          ))
+            ))}
+          </>
         )}
       </div>
+
+      {/* Pagination Controls */}
+      {!loading && filteredCandidates.length > 0 && (
+        <div className={styles.pagination}>
+          <button 
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className={styles.paginationButton}
+          >
+            Previous
+          </button>
+          
+          <div className={styles.paginationInfo}>
+            <span>
+              Page {currentPage} of {totalPages} 
+              ({filteredCandidates.length} total candidates)
+            </span>
+          </div>
+
+          <div className={styles.paginationNumbers}>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+              <button
+                key={pageNum}
+                onClick={() => handlePageChange(pageNum)}
+                className={`${styles.paginationNumber} ${
+                  currentPage === pageNum ? styles.active : ''
+                }`}
+              >
+                {pageNum}
+              </button>
+            ))}
+          </div>
+          
+          <button 
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className={styles.paginationButton}
+          >
+            Next
+          </button>
+        </div>
+      )}
 
       {/* Interview Scheduling Modal */}
       {showScheduleModal && (
