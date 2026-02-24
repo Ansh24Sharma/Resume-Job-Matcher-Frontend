@@ -139,6 +139,16 @@
   font-weight: 500;
 }
 
+.successMessage {
+  background: #d1fae5;
+  color: #065f46;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  border-left: 4px solid #28e03e;
+  font-weight: 500;
+}
+
 .submitButton {
   background: linear-gradient(135deg, #1a1a4c, #635cf6);
   color: white;

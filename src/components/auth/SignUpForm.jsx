@@ -13,6 +13,7 @@ const SignupForm = () => {
     role: "user",
   });
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -60,10 +61,10 @@ const SignupForm = () => {
         role: "user",
       });
 
-      alert("Account created successfully! Please login.");
+      setSuccess("Account created successfully! Please login.");
       navigate("/login");
     } catch (error) {
-      setError(error.response?.data?.message || "An error occurred. Please try again.");
+      setError(error.response?.data?.detail || "An error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -94,6 +95,12 @@ const SignupForm = () => {
               {error && (
                 <div className={styles.errorMessage}>
                   {error}
+                </div>
+              )}
+
+              {success && (
+                <div className={styles.successMessage}>
+                  {success}
                 </div>
               )}
 
