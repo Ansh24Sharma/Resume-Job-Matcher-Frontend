@@ -117,6 +117,17 @@
   height: 36px;
 }
 
+.passwordInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.passwordInputWrapper .input {
+  padding-right: 40px;
+  width: 100%;
+}
+
 .input:focus {
   outline: none;
   border-color: #5d55f8;
@@ -208,6 +219,19 @@
   color: #8b5cf6;
   text-decoration: underline;
 }
+
+.hideButton {
+  position: absolute;
+  right: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: #666;
+}
+
 
 /* Responsive styles are unchanged */
 
