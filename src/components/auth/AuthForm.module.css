@@ -128,6 +128,25 @@
   width: 100%;
 }
 
+.passwordToggle {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #666;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.passwordToggle:hover {
+  color: #5d55f8;
+}
+
 .input:focus {
   outline: none;
   border-color: #5d55f8;
@@ -231,7 +250,6 @@
   font-size: 14px;
   color: #666;
 }
-
 
 /* Responsive styles are unchanged */
 

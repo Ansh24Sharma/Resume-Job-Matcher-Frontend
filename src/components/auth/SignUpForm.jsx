@@ -3,7 +3,6 @@ import { useNavigate, Link } from "react-router-dom";
 import styles from "./AuthForm.module.css";
 import { signup } from "../../api/auth";
 import DarkVeil from "../../animated_css/Darkviel";
-import { FaEyeSlash, FaEye } from "react-icons/fa";
 
 const SignupForm = () => {
   const [formData, setFormData] = useState({
@@ -16,8 +15,6 @@ const SignupForm = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -65,7 +62,9 @@ const SignupForm = () => {
       });
 
       setSuccess("Account created successfully! Please login.");
-      navigate("/login");
+      setTimeout(() => {
+        navigate("/login");
+      }, 5000);
     } catch (error) {
       setError(error.response?.data?.detail || "An error occurred. Please try again.");
     } finally {
@@ -152,48 +151,30 @@ const SignupForm = () => {
 
               <div className={styles.inputGroup}>
                 <label htmlFor="password" className={styles.label}>Password</label>
-                <div className={styles.passwordInputWrapper}>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    id="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    className={styles.input}
-                    placeholder="Enter your password"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className={styles.hideButton}
-                  >
-                    {showPassword ? <FaEye /> : <FaEyeSlash />}
-                  </button>
-                </div>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  className={styles.input}
+                  placeholder="Enter your password"
+                  required
+                />
               </div>
 
               <div className={styles.inputGroup}>
                 <label htmlFor="confirmPassword" className={styles.label}>Confirm Password</label>
-                <div className={styles.passwordInputWrapper}>
-                  <input
-                    type={showConfirmPassword ? "text" : "password"}
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleInputChange}
-                    className={styles.input}
-                    placeholder="Confirm your password"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className={styles.hideButton}
-                    >
-                    {showPassword ? <FaEye /> : <FaEyeSlash />}
-                  </button>
-                </div>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                  className={styles.input}
+                  placeholder="Confirm your password"
+                  required
+                />
               </div>
 
               <button

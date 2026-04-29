@@ -4,7 +4,6 @@ import styles from "./AuthForm.module.css";
 import { login } from "../../api/auth";
 import { setToken, setUserData } from "../../utils/storage";
 import DarkVeil from "../../animated_css/Darkviel";
-import { FaEyeSlash, FaEye } from "react-icons/fa";
 
 const LoginForm = ({ setLoginStatus }) => {
   const [formData, setFormData] = useState({
@@ -13,7 +12,6 @@ const LoginForm = ({ setLoginStatus }) => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -111,25 +109,16 @@ const LoginForm = ({ setLoginStatus }) => {
 
               <div className={styles.inputGroup}>
                 <label htmlFor="password" className={styles.label}>Password</label>
-                <div className={styles.passwordInputWrapper}>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    id="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    className={styles.input}
-                    placeholder="Enter your password"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className={styles.hideButton}
-                  >
-                    {showPassword ? <FaEye /> : <FaEyeSlash />}
-                  </button>
-                </div>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  className={styles.input}
+                  placeholder="Enter your password"
+                  required
+                />
               </div>
 
               <button
