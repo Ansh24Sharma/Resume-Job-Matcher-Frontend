@@ -77,12 +77,12 @@ const SavedJobs = () => {
         type: "success",
         message: "Successfully applied to the job!",
       });
-      handleFetchSavedJobs();
+      setTimeout(() => {handleFetchSavedJobs()}, 5000);
     } catch (err) {
       console.error("Error applying for job:", err);
       setNotification({
         type: "error",
-        message: err.response?.data?.detail || "Failed to apply for the job.",
+        message: err.response?.data?.detail || err.response?.data?.message || "Failed to apply for the job.",
       });
     } finally {
       setApplying(false);
